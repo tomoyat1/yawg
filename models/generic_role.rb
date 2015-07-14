@@ -1,8 +1,10 @@
-class GenericRole
-  def vote(player)
+module Role
+  class GenericRole
+    def vote(player)
 
-  end
-  def role_action(player)
+    end
+    def role_action(player)
 
+    end
   end
 end

@@ -1,10 +1,9 @@
-require_relative 'generic_role'
+module Role
+  class Villager < GenericRole
 
-class Villager < GenericRole
-  
-  def role_action
-    "Villager has nothing to do"
+    def role_action
+      "Villager has nothing to do"
+    end
+
   end
 end
-
-
