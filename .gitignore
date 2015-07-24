@@ -1,0 +1,6 @@
+.bundle
+.sass-cache
+node_modules
+Gemfile.lock
+bower_components
+vendor

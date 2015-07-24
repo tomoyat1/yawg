@@ -4,12 +4,10 @@ class Player
   attr_accessor :role
 
   def initialize(args)
-    args.each do |key, value|
-      if key == :name then
-        @name = value
-      end
-    end
+    @name = args[:name]
   end
+
+  def 
 
   def die
     @is_alive = false

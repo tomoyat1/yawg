@@ -1,15 +1,9 @@
 module Role
   class Werewolf < GenericRole
-    def vote(player)
 
+    def execute_action(player)
+      player.die
     end
 
-    def action(player)
-      player.kill
-    end
-
-    def to_s
-      'Werewolf'
-    end
   end
 end
