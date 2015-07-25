@@ -16,8 +16,12 @@ class Round
   end
 
   def add_player(name)
-    @players.store(name.intern, Player.new(name: name))
-    @players.values.last.name
+    if !@players.assoc(name) then
+      @players.store(name, Player.new(name: name))
+      @players.values.last.name
+    else
+      raise "Player already in group"
+    end
   end
 
   def init_round(role_hash)

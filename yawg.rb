@@ -24,14 +24,30 @@ class Yawg < Sinatra::Base
   end
 
   post '/staging_existing' do
-    @@rounds[params[:game]].add_player(params[:username])
-    erb :staging_existing
+    begin
+      if !@@rounds[params[:game]] then
+        raise "Group does not exist"
+      end
+      @@rounds[params[:game]].add_player(params[:username])
+    rescue => evar
+      evar.message
+    else
+      erb :staging_existing
+    end
   end
 
   post '/staging_new' do
-    @@rounds.store(params[:game], Round.new)
-    @@rounds[params[:game]].add_player(params[:username])
-    erb :staging_new
+    begin
+      if @@rounds.assoc(params[:game]) then
+        raise "Group already exists"
+      end
+    rescue => evar
+      evar.message
+    else
+      @@rounds.store(params[:game], Round.new)
+      @@rounds[params[:game]].add_player(params[:username])
+      erb :staging_new
+    end
   end
 
 
