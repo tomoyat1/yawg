@@ -1,11 +1,6 @@
 require 'bundler'
 Bundler.require
 
-require 'sinatra/base'
-require 'sinatra/asset_pipeline'
-require 'sprockets'
-require 'bower'
-
 require_relative 'models/init'
 
 class Yawg < Sinatra::Base
@@ -20,7 +15,11 @@ class Yawg < Sinatra::Base
   @@rounds = Hash.new
 
   get '/' do
-    erb :index
+    if session[:username] then
+      "Session already exists"
+    else
+      erb :index
+    end
   end
 
   post '/staging_existing' do
@@ -32,6 +31,8 @@ class Yawg < Sinatra::Base
     rescue => evar
       evar.message
     else
+      session[:username] = params[:username]
+      session[:game] = params[:game]
       erb :staging_existing
     end
   end
@@ -46,6 +47,8 @@ class Yawg < Sinatra::Base
     else
       @@rounds.store(params[:game], Round.new)
       @@rounds[params[:game]].add_player(params[:username])
+      session[:username] = params[:username]
+      session[:game] = params[:game]
       erb :staging_new
     end
   end

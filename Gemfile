@@ -2,13 +2,9 @@
 # the following line to use "https"
 source 'http://rubygems.org'
 
-gem "sinatra", "~> 1.4.6"
-gem "sinatra-asset-pipeline"
-gem "shotgun"
-
-gem "bower"
-gem "nokogiri"
+gem "sinatra", "~> 1.4.6", require: 'sinatra/base'
+gem "sinatra-asset-pipeline", require: 'sinatra/asset_pipeline'
+gem "sprockets", require: 'sprockets'
 
 gem "sass"
-gem "jquery"
-gem "bootstrap-sass"
+gem "nokogiri"
