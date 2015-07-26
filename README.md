@@ -6,7 +6,7 @@ Yet Another Werewolf Game
 * Bower
 
 ## Instructions
-`bundle install`  
+`bundle install --path vendor/bundle`  
 `bower install`
 
 To start server,  
