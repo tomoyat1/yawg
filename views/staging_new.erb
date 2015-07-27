@@ -1,4 +1,17 @@
 <h1>Waiting for round to start</h1>
-You have created new group <%= params[:game] %>.<br>
-Your username is <%= session[:username] %>.<br>
-List of players in your group
+<div class="col-md-12">
+  <p>You have created new group <%= session[:game].name %></p>
+  <p>Your username is <%= session[:username].name %><br></p>
+  <p>List of players in your group</p>
+</div>
+<div class="player-list col-md-6">
+  <ul class="list-group">
+    <% session[:game].players.each_key do |key| %>
+      <li class="list-group-item"><%= key %></li>
+    <% end %>
+  </ul>
+</div>
+<div class="col-md-6">
+  <button class="btn btn-default">Start Round</button>
+  <button class="btn btn-danger">Delete Group</button>
+</div>

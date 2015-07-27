@@ -10,8 +10,10 @@ include Phase
 
 class Round
   attr_accessor :players
+  attr_reader :name
 
-  def initialize
+  def initialize(args)
+    @name = args[:name]
     @players = Hash.new
   end
 

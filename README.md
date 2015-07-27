@@ -10,4 +10,4 @@ Yet Another Werewolf Game
 `bower install`
 
 To start server,  
-`rackup config.ru`
+`bundle exec rackup -s thin config.ru`

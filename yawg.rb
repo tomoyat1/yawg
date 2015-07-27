@@ -1,9 +1,17 @@
 require 'bundler'
 Bundler.require
 
+require 'sinatra/reloader'
 require_relative 'models/init'
 
 class Yawg < Sinatra::Base
+
+  configure :development do
+    register Sinatra::Reloader
+  end
+
+  set :server, :thin
+  set :sockets, []
   
   set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
@@ -31,8 +39,9 @@ class Yawg < Sinatra::Base
     rescue => evar
       evar.message
     else
-      session[:username] = params[:username]
-      session[:game] = params[:game]
+      session[:username] = @@rounds[params[:game]].players[params[:username]]
+      session[:game] = @@rounds[params[:game]]
+        settings.sockets.each{|s| s.send(erb :player_list, :layout => false) }
       erb :staging_existing
     end
   end
@@ -45,12 +54,27 @@ class Yawg < Sinatra::Base
     rescue => evar
       evar.message
     else
-      @@rounds.store(params[:game], Round.new)
+      @@rounds.store(params[:game], Round.new(name: params[:game]))
       @@rounds[params[:game]].add_player(params[:username])
-      session[:username] = params[:username]
-      session[:game] = params[:game]
+      session[:username] = @@rounds[params[:game]].players[params[:username]]
+      session[:game] = @@rounds[params[:game]]
       erb :staging_new
     end
+  end
+
+  get '/players/list' do
+   if !request.websocket?
+     halt 500
+   else
+    request.websocket do |ws|
+      ws.onopen do
+        settings.sockets << ws
+      end
+      ws.onclose do
+        settings.sockets.delete(ws)
+      end
+    end
+   end
   end
 
 
