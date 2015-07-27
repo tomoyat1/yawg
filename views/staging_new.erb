@@ -1,17 +1,24 @@
 <h1>Waiting for round to start</h1>
-<div class="col-md-12">
-  <p>You have created new group <%= session[:game].name %></p>
-  <p>Your username is <%= session[:username].name %><br></p>
-  <p>List of players in your group</p>
+<div class="col-sm-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Info
+    </div>
+    <div class="panel-body">
+      <p>You have created new group <%= session[:game].name %></p>
+      <p>Your username is <%= session[:username].name %></p>
+      <p>List of players in your group</p>
+    </div>
+  </div>
 </div>
-<div class="player-list col-md-6">
-  <ul class="list-group">
-    <% session[:game].players.each_key do |key| %>
-      <li class="list-group-item"><%= key %></li>
-    <% end %>
-  </ul>
-</div>
-<div class="col-md-6">
-  <button class="btn btn-default">Start Round</button>
-  <button class="btn btn-danger">Delete Group</button>
+<div class="col-sm-6 col-sm-push-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Actions
+    </div>
+    <div class="list-group">
+      <button class="list-group-item">Start Round</button>
+      <button class="list-group-item list-group-item-danger">Delete Group</button>
+    </div>
+  </div>
 </div>

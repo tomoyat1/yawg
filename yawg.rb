@@ -30,18 +30,54 @@ class Yawg < Sinatra::Base
     end
   end
 
+  post '/game' do
+    if params[:existing] == 'true' then
+      begin
+        if !@@rounds[params[:game]] then
+          raise "Group does not exist"
+        end
+      rescue => evar
+        evar.message
+      else
+        @@rounds[params[:game]].add_player(params[:username])
+        session[:username] = @@rounds[params[:game]].players[params[:username]]
+        session[:game] = @@rounds[params[:game]]
+          settings.sockets.each{|s| s.send(erb :player_list, :layout => false) }
+        erb :game do
+          erb :staging_existing
+        end
+      end
+    elsif params[:existing] == 'false' then
+      begin
+        if @@rounds.assoc(params[:game]) then
+          raise "Group already exists"
+        end
+      rescue => evar
+        evar.message
+      else
+        @@rounds.store(params[:game], Round.new(name: params[:game]))
+        @@rounds[params[:game]].add_player(params[:username])
+        session[:username] = @@rounds[params[:game]].players[params[:username]]
+        session[:game] = @@rounds[params[:game]]
+        erb :game do
+          erb :staging_new
+        end
+      end
+    end
+  end
+
   post '/staging_existing' do
     begin
       if !@@rounds[params[:game]] then
         raise "Group does not exist"
       end
-      @@rounds[params[:game]].add_player(params[:username])
     rescue => evar
       evar.message
     else
+      @@rounds[params[:game]].add_player(params[:username])
       session[:username] = @@rounds[params[:game]].players[params[:username]]
       session[:game] = @@rounds[params[:game]]
-        settings.sockets.each{|s| s.send(erb :player_list, :layout => false) }
+      settings.sockets.each{|s| s.send(erb :player_list, :layout => false) }
       erb :staging_existing
     end
   end
