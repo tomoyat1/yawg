@@ -1,13 +1,10 @@
-<%= yield %>
-<div class="player-list col-sm-6 col-sm-pull-6">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      Players
-    </div>
-    <ul class="list-group">
-      <% session[:game].players.each_key do |key| %>
-        <li class="list-group-item"><%= key %></li>
-      <% end %>
-    </ul>
-  </div>
+<h1 class="phase">Waiting for round to start</h1>
+<div class="col-sm-12">
+  <%= erb info %>
+</div>
+<div class="col-sm-6 col-sm-push-6 controls">
+  <%= erb controls %>
+</div>
+<div class="col-sm-6 col-sm-pull-6 player-list">
+  <%= erb :player_list %>
 </div>

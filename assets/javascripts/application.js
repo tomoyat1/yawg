@@ -38,7 +38,6 @@ function game() {
         if (data_in.player_list) {
           $(".player-list").html(data_in.player_list);
         } else if (data_in.phase) {
-          alert(data_in.phase);
           $("h1.phase").text(data_in.phase);
         }
       }

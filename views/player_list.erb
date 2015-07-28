@@ -1,12 +1,10 @@
-<ul class="list-group">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      Players
-    </div>
-    <ul class="list-group">
-      <% session[:game].players.each_key do |key| %>
-        <li class="list-group-item"><%= key %></li>
-      <% end %>
-    </ul>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Players
   </div>
-</ul>
+  <ul class="list-group">
+    <% session[:game].players.each_key do |key| %>
+      <li class="list-group-item"><%= key %></li>
+    <% end %>
+  </ul>
+</div>

@@ -41,13 +41,13 @@ class Yawg < Sinatra::Base
         evar.message
       else
         @@rounds[params[:game]].add_player(params[:username])
+
         session[:username] = @@rounds[params[:game]].players[params[:username]]
         session[:game] = @@rounds[params[:game]]
-        player_list = { player_list: erb(:player_list, :layout => false) }
-        settings.sockets.each{|s| s.send(player_list.to_json) }
-        erb :game, :locals => { :location => 'Game' } do
-          erb :staging_existing
-        end
+
+        settings.sockets.each{|s| s.send({ player_list: erb(:player_list, :layout => false) }.to_json) }
+        info = :info_existing
+        controls = :controls_staging_existing
       end
     elsif params[:existing] == 'false' then
       begin
@@ -59,13 +59,15 @@ class Yawg < Sinatra::Base
       else
         @@rounds.store(params[:game], Round.new(name: params[:game]))
         @@rounds[params[:game]].add_player(params[:username])
+
         session[:username] = @@rounds[params[:game]].players[params[:username]]
         session[:game] = @@rounds[params[:game]]
-        erb :game, :locals => { :location => 'Game' } do
-          erb :staging_new
-        end
+
+        info = :info_new
+        controls = :controls_staging_new
       end
     end
+    erb :game, :locals => { :location => 'Game', :info => info, :controls => controls }
   end
 
   get '/game/status' do
