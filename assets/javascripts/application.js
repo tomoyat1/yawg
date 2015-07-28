@@ -14,6 +14,7 @@ function participation() {
   $("button[type='submit']").click(function(e) {
     e.preventDefault();
     var $form = $("form[data-existing=" + $(this).attr("data-existing") + "]");
+
     if ($form.find("[name=username]").val() && $form.find("[name=game]").val()) {
       $form.submit();
     } else {
@@ -27,14 +28,28 @@ function participation() {
 
 function game() {
   var uri = "ws://" + location.host + "/game/status";
-  var pl_socket = null;
+  var socket = null;
 
-  if (pl_socket == null) {
-    pl_socket = new WebSocket(uri);
-    pl_socket.onmessage = function() {
+  if (socket == null) {
+    socket = new WebSocket(uri);
+    socket.onmessage = function(event) {
       if (event && event.data) {
-        $(".player-list").html($.parseJSON(event.data).player_list);
+        var data_in = $.parseJSON(event.data);
+        if (data_in.player_list) {
+          $(".player-list").html(data_in.player_list);
+        } else if (data_in.phase) {
+          alert(data_in.phase);
+          $("h1.phase").text(data_in.phase);
+        }
       }
     }
+    socket.onerror = function() {
+      alert("error");
+    }
   }
+
+  $("button.start").click(function() {
+    var data_out = {command: "start"};
+    socket.send("" + JSON.stringify(data_out));
+  });
 }

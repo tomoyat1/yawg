@@ -76,9 +76,17 @@ class Yawg < Sinatra::Base
         ws.onopen do
           settings.sockets << ws
         end
-        #ws.onmessage do |msg|
+        ws.onmessage do |msg|
           #parse whatever json that gets thrown at us
-        #end
+          msg_hash = JSON.parse(msg)
+          if msg_hash.assoc('command') then
+            if msg_hash['command'] == 'start' then
+              settings.sockets.each do |s|
+                s.send({ phase: 'Day' }.to_json)
+              end
+            end
+          end
+        end
         ws.onclose do
           settings.sockets.delete(ws)
         end
