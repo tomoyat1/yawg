@@ -20,4 +20,19 @@
       <button class="list-group-item list-group-item-danger">Delete Group</button>
     </div>
   </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Settings
+    </div>
+    <div class="list-group">
+      <% GenericRole.desendants.each do |desendant| %>
+        <div class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon"><%= desendant %></span>
+            <input class="form-control" type="number" name="placeholder" min="0">
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

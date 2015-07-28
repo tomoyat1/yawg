@@ -11,28 +11,18 @@ $(function() {
 });
 
 function participation() {
-  $("button.staging-new").click(function(e) {
-      e.preventDefault();
-      if ($("form.staging-new [name=username]").val() && $("form.staging-new [name=game]").val()) {
-        $("form.staging-new").submit();
-      } else {
-        if (!$("form.staging-new [name=username]").val())
-          $("form.staging-new [name=username]").parent().addClass("has-error");
-        if (!$("form.staging-new [name=game]").val())
-          $("form.staging-new [name=game]").parent().addClass("has-error");
-      }
-    });
-  $("button.staging-existing").click(function(e) {
-      e.preventDefault();
-      if ($("form.staging-existing [name=username]").val() && $("form.staging-existing [name=game]").val()) {
-        $("form.staging-existing").submit();
-      } else {
-        if (!$("form.staging-existing [name=username]").val())
-          $("form.staging-existing [name=username]").parent().addClass("has-error");
-        if (!$("form.staging-existing [name=game]").val())
-          $("form.staging-existing [name=game]").parent().addClass("has-error");
-      }
-    });
+  $("button[type='submit']").click(function(e) {
+    e.preventDefault();
+    var $form = $("form[data-existing=" + $(this).attr("data-existing") + "]");
+    if ($form.find("[name=username]").val() && $form.find("[name=game]").val()) {
+      $form.submit();
+    } else {
+      if (!$form.find("[name=username]").val())
+        $form.find("[name=username]").parent().addClass("has-error");
+      if (!$form.find("[name=game]").val())
+        $form.find("[name=game]").parent().addClass("has-error");
+    }
+  });
 }
 
 function player_list() {

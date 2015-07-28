@@ -1,5 +1,5 @@
 <h2>Open new game</h2>
-<form method="post" action="/game" class="form-horizontal staging-new">
+<form method="post" action="/game" class="form-horizontal" data-existing="false">
   <div class="form-group">
     <label class="control-label">Username</label>
     <input type="text" name="username" class="form-control" placeholder="Username">
@@ -10,11 +10,11 @@
   </div>
   <input type="hidden" name="existing" value="false">
   <div class="form-group">
-    <button type="submit" class="btn btn-default staging-new">Enter</button>
+    <button type="submit" class="btn btn-default" data-existing="false">Enter</button>
   </div>
 </form>
 <h2>Participate in existing game</h2>
-<form method="post" action="/game" class="form-horizontal staging-existing">
+<form method="post" action="/game" class="form-horizontal" data-existing="true">
   <div class="form-group">
     <label class="control-label">Username</label>
     <input type="text" name="username" class="form-control" placeholder="Username">
@@ -25,6 +25,6 @@
   </div>
   <input type="hidden" name="existing" value="true">
   <div class="form-group">
-    <button type="submit" class="btn btn-default staging-existing">Enter</button>
+    <button type="submit" class="btn btn-default" data-existing="true">Enter</button>
   </div>
 </form>
