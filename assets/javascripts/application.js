@@ -4,7 +4,7 @@ $(function() {
   if (window.location.pathname.match(/staging_/))
     player_list();
   else if(window.location.pathname.match(/game/))
-    player_list();
+    game();
   //Match root if nothing else matches
   else 
     participation();
@@ -25,15 +25,15 @@ function participation() {
   });
 }
 
-function player_list() {
-  var uri = "ws://" + location.host + "/players/list";
+function game() {
+  var uri = "ws://" + location.host + "/game/status";
   var pl_socket = null;
 
   if (pl_socket == null) {
     pl_socket = new WebSocket(uri);
     pl_socket.onmessage = function() {
       if (event && event.data) {
-        $(".player-list").html(event.data);
+        $(".player-list").html($.parseJSON(event.data).player_list);
       }
     }
   }

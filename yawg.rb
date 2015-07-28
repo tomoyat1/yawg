@@ -2,6 +2,7 @@ require 'bundler'
 Bundler.require
 
 require 'sinatra/reloader'
+require 'json'
 require_relative 'models/init'
 
 class Yawg < Sinatra::Base
@@ -42,7 +43,8 @@ class Yawg < Sinatra::Base
         @@rounds[params[:game]].add_player(params[:username])
         session[:username] = @@rounds[params[:game]].players[params[:username]]
         session[:game] = @@rounds[params[:game]]
-          settings.sockets.each{|s| s.send(erb :player_list, :layout => false) }
+        player_list = { player_list: erb(:player_list, :layout => false) }
+        settings.sockets.each{|s| s.send(player_list.to_json) }
         erb :game, :locals => { :location => 'Game' } do
           erb :staging_existing
         end
@@ -66,22 +68,23 @@ class Yawg < Sinatra::Base
     end
   end
 
-  get '/players/list' do
-   if !request.websocket?
+  get '/game/status' do
+    if !request.websocket?
      halt 500
-   else
-    request.websocket do |ws|
-      ws.onopen do
-        settings.sockets << ws
-      end
-      ws.onclose do
-        settings.sockets.delete(ws)
+    else
+      request.websocket do |ws|
+        ws.onopen do
+          settings.sockets << ws
+        end
+        #ws.onmessage do |msg|
+          #parse whatever json that gets thrown at us
+        #end
+        ws.onclose do
+          settings.sockets.delete(ws)
+        end
       end
     end
-   end
   end
-
-
 
 # Routing for development. Everything below is temporary.
   get '/new/game/:game_name' do
