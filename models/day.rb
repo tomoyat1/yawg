@@ -3,12 +3,6 @@ require_relative 'generic_phase'
 module Phase
   class Day < GenericPhase
 
-    def initialize(players)
-      players.each do |key, value|
-        @vote_results.store(value, 0)
-      end
-    end
-
     def execute_actions
       @action_hash.each do |key, value|
         @vote_results[value]+= 1
@@ -29,7 +23,10 @@ module Phase
           player.kill
         end
       end
+    end
 
+    def current_action_name_of_player(player)
+      player.role.day_action_name
     end
   end
 end

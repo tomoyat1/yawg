@@ -11,10 +11,12 @@ include Phase
 class Round
   attr_accessor :players
   attr_reader :name
+  attr_reader :phases
 
   def initialize(args)
     @name = args[:name]
     @players = Hash.new
+    @phases = Array.new
   end
 
   def add_player(name)
@@ -30,6 +32,8 @@ class Round
   end
 
   def init_round(role_hash)
+    @phases << Night.new(1)
+
     role_array = Array.new
     role_hash.each do |key, value|
       value.times do
@@ -47,8 +51,11 @@ class Round
     end
   end
 
-  def add_action_to_queue(hash)
-    @phase
+  def action_name_of_player(name)
+    @phases.last.current_action_name_of_player(@players[name])
   end
 
+  def add_action_to_queue(hash)
+    @phases
+  end
 end

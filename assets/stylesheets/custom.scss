@@ -1,0 +1,11 @@
+div.info {
+  div.panel-body {
+    height: 6em;
+    padding: 1em;
+    overflow-y: hidden;
+
+    > div {
+      margin-top: 2em;
+    }
+  }
+}

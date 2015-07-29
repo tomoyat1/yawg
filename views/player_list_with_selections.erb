@@ -1,0 +1,10 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Players
+  </div>
+  <div class="list-group">
+    <% players.each_key do |key| %>
+      <button class="list-group-item" data-target="<%= key %>"><%= key %></li>
+    <% end %>
+  </div>
+</div>
