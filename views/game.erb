@@ -1,0 +1,10 @@
+<h1 class="phase">Waiting for round to start</h1>
+<div class="col-sm-12 info">
+  <%= erb info %>
+</div>
+<div class="col-sm-6 col-sm-push-6 controls">
+  <%= erb controls %>
+</div>
+<div class="col-sm-6 col-sm-pull-6 player-list">
+  <%= erb :player_list, :locals => { :players => players } %>
+</div>

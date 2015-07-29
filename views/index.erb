@@ -1,26 +1,30 @@
-<h2>Participate in existing game</h2>
-<form method="post" action="/staging_existing">
+<h2>Open new game</h2>
+<form method="post" action="/game" class="form-horizontal" data-existing="false">
   <div class="form-group">
-    <div class="input-group">
-      <input type="text" name="username" class="form-control" placeholder="Username">
-      <span class="input-group-addon" id="atmark">@</span>
-      <input type="text" name="game" class="form-control" placeholder="Game">
-      <span class="input-group-btn">
-        <input type="submit" class="btn btn-default" type="button">Enter</button>
-      </span>
-    </div>
+    <label class="control-label">Username</label>
+    <input type="text" name="username" class="form-control" placeholder="Username">
+  </div>
+  <div class="form-group">
+    <label class="control-label">Game</label>
+    <input type="text" name="game" class="form-control" placeholder="Game">
+  </div>
+  <input type="hidden" name="existing" value="false">
+  <div class="form-group">
+    <button type="submit" class="btn btn-default" data-existing="false">Enter</button>
   </div>
 </form>
-<h2>Open new game</h2>
-<form method="post" action="/staging_new">
+<h2>Participate in existing game</h2>
+<form method="post" action="/game" class="form-horizontal" data-existing="true">
   <div class="form-group">
-    <div class="input-group">
-      <input type="text" name="username" class="form-control" placeholder="Username">
-      <span class="input-group-addon" id="atmark">@</span>
-      <input type="text" name="game" class="form-control" placeholder="Game">
-      <span class="input-group-btn">
-        <input type="submit" class="btn btn-default" type="button">Enter</button>
-      </span>
-    </div>
+    <label class="control-label">Username</label>
+    <input type="text" name="username" class="form-control" placeholder="Username">
+  </div>
+  <div class="form-group">
+    <label class="control-label">Game</label>
+    <input type="text" name="game" class="form-control" placeholder="Game">
+  </div>
+  <input type="hidden" name="existing" value="true">
+  <div class="form-group">
+    <button type="submit" class="btn btn-default" data-existing="true">Enter</button>
   </div>
 </form>
