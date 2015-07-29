@@ -3,7 +3,7 @@
     Players
   </div>
   <ul class="list-group">
-    <% session[:game].players.each_key do |key| %>
+    <% players.each_key do |key| %>
       <li class="list-group-item"><%= key %></li>
     <% end %>
   </ul>

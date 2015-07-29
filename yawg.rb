@@ -12,20 +12,21 @@ class Yawg < Sinatra::Base
   end
 
   set :server, :thin
-  set :sockets, []
+  set :sockets, Hash.new
   
   set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
   register Sinatra::AssetPipeline
   settings.sprockets.append_path 'bower_components'
 
-  enable :sessions
+  disable :sessions
+  use Rack::Session::Pool
 
   @@rounds = Hash.new
 
   get '/' do
     if session[:username] then
-      "Session already exists"
+      'Session already exists'
     else
       erb :index, :locals => { :location => 'Top' }
     end
@@ -42,17 +43,21 @@ class Yawg < Sinatra::Base
       else
         @@rounds[params[:game]].add_player(params[:username])
 
-        session[:username] = @@rounds[params[:game]].players[params[:username]]
-        session[:game] = @@rounds[params[:game]]
+        session[:username] = params[:username]
+        session[:game] = params[:game]
 
-        settings.sockets.each{|s| s.send({ player_list: erb(:player_list, :layout => false) }.to_json) }
+        settings.sockets[params[:game]].each do |username, s| 
+          s.send ({ player_list: erb(:player_list,
+              :layout => false,
+              :locals => {:players => @@rounds[session[:game]].players }) }.to_json)
+        end
         info = :info_existing
         controls = :controls_staging_existing
       end
     elsif params[:existing] == 'false' then
       begin
-        if @@rounds.assoc(params[:game]) then
-          raise "Group already exists"
+        if @@rounds.key?(params[:game]) then
+          raise 'Group already exists'
         end
       rescue => evar
         evar.message
@@ -60,37 +65,47 @@ class Yawg < Sinatra::Base
         @@rounds.store(params[:game], Round.new(name: params[:game]))
         @@rounds[params[:game]].add_player(params[:username])
 
-        session[:username] = @@rounds[params[:game]].players[params[:username]]
-        session[:game] = @@rounds[params[:game]]
+        session[:username] = params[:username]
+        session[:game] = params[:game]
 
         info = :info_new
         controls = :controls_staging_new
       end
     end
-    erb :game, :locals => { :location => 'Game', :info => info, :controls => controls }
+    players = @@rounds[session[:game]].players
+    erb :game, :locals => { :location => 'Game',
+                            :info => info,
+                            :controls => controls,
+                            :players => @@rounds[session[:game]].players }
   end
 
   get '/game/status' do
-    if !request.websocket?
+    unless request.websocket?
      halt 500
     else
       request.websocket do |ws|
         ws.onopen do
-          settings.sockets << ws
+          unless settings.sockets.key?(session[:game]) then
+            settings.sockets.store(session[:game], Hash.new)
+          end
+          settings.sockets[session[:game]].store(session[:username], ws)
         end
         ws.onmessage do |msg|
           #parse whatever json that gets thrown at us
           msg_hash = JSON.parse(msg)
           if msg_hash.assoc('command') then
             if msg_hash['command'] == 'start' then
-              settings.sockets.each do |s|
-                s.send({ phase: 'Day' }.to_json)
+              role_count = msg_hash['role_count']
+              @@rounds[session[:game]].init_round(role_count)
+              settings.sockets[session[:game]].each do |username, s|
+                s.send({ phase: 'Day', 
+                         role: @@rounds[session[:game]].player(username).role.role_name }.to_json)
               end
             end
           end
         end
         ws.onclose do
-          settings.sockets.delete(ws)
+          settings.sockets[session[:game]].delete(ws)
         end
       end
     end

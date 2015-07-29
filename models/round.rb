@@ -18,24 +18,32 @@ class Round
   end
 
   def add_player(name)
-    if !@players.assoc(name) then
+    unless @players.key?(name) then
       @players.store(name, Player.new(name: name))
-      @players.values.last.name
     else
       raise "Player already in group"
     end
+  end
+
+  def player(name)
+    @players[name]
   end
 
   def init_round(role_hash)
     role_array = Array.new
     role_hash.each do |key, value|
       value.times do
-        role_array << key.id2name
+        role_array << key
+      end
+    end
+    if role_array.size < @players.size then
+      until role_array.size == @players.size
+        role_array << "Villager" 
       end
     end
     role_array.shuffle!
-    role_array.each_index do |i|
-      @players[i].role = Role.const_get(role_array[i])
+    @players.values.each_index do |i|
+      @players.values[i].role = Role.const_get(role_array[i])
     end
   end
 

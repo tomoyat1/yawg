@@ -37,9 +37,18 @@ function game() {
         var data_in = $.parseJSON(event.data);
         if (data_in.player_list) {
           $(".player-list").html(data_in.player_list);
-        } else if (data_in.phase) {
+        }
+        if (data_in.phase) {
           $("h1.phase").text(data_in.phase);
         }
+        if (data_in.role) {
+          $("div.info div.panel-body > div:first").text(data_in.role);
+          $("div.controls").children().fadeOut(500, function() {
+            $("div.controls").html("");
+            
+          });
+        }
+
       }
     }
     socket.onerror = function() {
@@ -48,7 +57,13 @@ function game() {
   }
 
   $("button.start").click(function() {
-    var data_out = {command: "start"};
+    var data_out = {
+      command: "start"
+    };
+    data_out.role_count = new Object;
+    $("input.role-count").each(function () {
+      data_out.role_count[$(this).attr("name")] = parseInt($(this).val(), 10);
+    });
     socket.send("" + JSON.stringify(data_out));
   });
 }
