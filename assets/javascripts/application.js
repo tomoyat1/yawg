@@ -27,6 +27,8 @@ function participation() {
 }
 
 function game() {
+  $("div.info div.panel-body")
+    .scrollTop($("div.info div.panel-body > div").height());
   var uri = "ws://" + location.host + "/game/status";
   var socket = null;
 
@@ -35,20 +37,33 @@ function game() {
     socket.onmessage = function(event) {
       if (event && event.data) {
         var data_in = $.parseJSON(event.data);
-        if (data_in.player_list) {
+        if (data_in.action == "pl_in_staging") {
           $(".player-list").html(data_in.player_list);
+        } else if (data_in.action == "in_game") {
+          if (data_in.phase) {
+            $("h1.phase").fadeOut(50, function() {
+              $(this).text(data_in.phase);
+              $(this).fadeIn(50);
+            });
+          }
+          if (data_in.info) {
+            $("div.info div.panel-body > div").append(data_in.info);
+            $("div.info div.panel-body")
+              .scrollTop($("div.info div.panel-body > div").height());
+          }
+          if (data_in.controls) {
+            $("div.controls").fadeOut(50, function() {
+              $(this).html(data_in.controls);
+              $(this).fadeIn(50);
+            });
+          }
+          if (data_in.players) {
+            $("div.player-list").fadeOut(50, function() {
+              $(this).html(data_in.players);
+              $(this).fadeIn(50);
+            });
+          }
         }
-        if (data_in.phase) {
-          $("h1.phase").text(data_in.phase);
-        }
-        if (data_in.role) {
-          $("div.info div.panel-body > div:first").text(data_in.role);
-          $("div.controls").children().fadeOut(500, function() {
-            $("div.controls").html("");
-            
-          });
-        }
-
       }
     }
     socket.onerror = function() {

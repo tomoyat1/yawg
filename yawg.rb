@@ -5,6 +5,8 @@ require 'sinatra/reloader'
 require 'json'
 require_relative 'models/init'
 
+require_relative 'ws_controller'
+
 class Yawg < Sinatra::Base
 
   configure :development do
@@ -12,7 +14,6 @@ class Yawg < Sinatra::Base
   end
 
   set :server, :thin
-  set :sockets, Hash.new
   
   set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
@@ -46,11 +47,7 @@ class Yawg < Sinatra::Base
         session[:username] = params[:username]
         session[:game] = params[:game]
 
-        settings.sockets[params[:game]].each do |username, s| 
-          s.send ({ player_list: erb(:player_list,
-              :layout => false,
-              :locals => {:players => @@rounds[session[:game]].players }) }.to_json)
-        end
+
         info = :info_existing
         controls = :controls_staging_existing
       end
@@ -63,6 +60,7 @@ class Yawg < Sinatra::Base
         evar.message
       else
         @@rounds.store(params[:game], Round.new(name: params[:game]))
+        @@rounds[params[:game]].add_observer(WSController.instance)
         @@rounds[params[:game]].add_player(params[:username])
 
         session[:username] = params[:username]
@@ -85,29 +83,30 @@ class Yawg < Sinatra::Base
     else
       request.websocket do |ws|
         ws.onopen do
-          unless settings.sockets.key?(session[:game]) then
-            settings.sockets.store(session[:game], Hash.new)
-          end
-          settings.sockets[session[:game]].store(session[:username], ws)
+          WSController.instance.add_socket( ws, session[:username], session[:game] )
         end
         ws.onmessage do |msg|
-          #parse whatever json that gets thrown at us
           msg_hash = JSON.parse(msg)
           if msg_hash.assoc('command') then
             if msg_hash['command'] == 'start' then
+              round = @@rounds[session[:game]]
+
               role_count = msg_hash['role_count']
-              @@rounds[session[:game]].init_round(role_count)
-              settings.sockets[session[:game]].each do |username, s|
-                s.send({ phase: 'Day', 
-                         role: @@rounds[session[:game]].player(username).role.role_name }.to_json)
-              end
+              round.init_round(role_count)
             end
           end
         end
         ws.onclose do
-          settings.sockets[session[:game]].delete(ws)
+          WSController.instance.delete_socket( ws, session[:game] ) 
+          session.clear
         end
       end
+    end
+  end
+
+  helpers do
+    def format_info(raw_string)
+      "<div>#{raw_string}</div>"
     end
   end
 
