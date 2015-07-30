@@ -47,27 +47,6 @@ class Yawg < Sinatra::Base
         session[:username] = params[:username]
         session[:game] = params[:game]
 
-        @@rounds[params[:game]].players.each_key do |player|
-          WSController.add_to_next_msg(key: :action, value: 'pl_in_staging')
-
-          WSController.queue_erb(:player_list,
-                                 msg_key: :player_list,
-                                 locals: { players: @@rounds[session[:game]].players })
-
-          #msg = { :action => 'pl_in_staging', 
-          #        :player_list => erb(:player_list,
-          #                         :layout => false,
-          #                         :locals => {
-          #                           :players => @@rounds[session[:game]].players }) }
-          WSController.send_msg_to_player_in_game( player: player,
-                                                      game: params[:game] )
-        end
-
-        #WSController.sockets[params[:game]].each do |username, s| 
-        #  s.send ({ action: 'pl_in_staging' ,player_list: erb(:player_list,
-        #      :layout => false,
-        #      :locals => {:players => @@rounds[session[:game]].players }) }.to_json)
-        #end
 
         info = :info_existing
         controls = :controls_staging_existing
@@ -81,6 +60,7 @@ class Yawg < Sinatra::Base
         evar.message
       else
         @@rounds.store(params[:game], Round.new(name: params[:game]))
+        @@rounds[params[:game]].add_observer(WSController.instance)
         @@rounds[params[:game]].add_player(params[:username])
 
         session[:username] = params[:username]
@@ -103,10 +83,7 @@ class Yawg < Sinatra::Base
     else
       request.websocket do |ws|
         ws.onopen do
-          unless WSController.sockets.key?(session[:game]) then
-            WSController.sockets.store(session[:game], Hash.new)
-          end
-          WSController.sockets[session[:game]].store(session[:username], ws)
+          WSController.instance.add_socket( ws, session[:username], session[:game] )
         end
         ws.onmessage do |msg|
           msg_hash = JSON.parse(msg)
@@ -116,34 +93,11 @@ class Yawg < Sinatra::Base
 
               role_count = msg_hash['role_count']
               round.init_round(role_count)
-
-                #refactor from here
-              WSController.sockets[session[:game]].each do |username, s|
-                WSController.add_to_next_msg(key: :action, value: 'in_game')
-
-                WSController.add_to_next_msg(key: :phase, value: round.phases.last.shown_name)
-
-                role = round.player(username).role.shown_name
-                role_msg = format_info "Your role is #{role}"
-                WSController.add_to_next_msg(key: :info, value: role_msg)
-
-                WSController.queue_erb(:controls_game,
-                                       msg_key: :controls,
-                                       locals: { action_name: @@rounds[session[:game]].action_name_of_player(session[:username]) })
-
-                WSController.queue_erb(:player_list_with_selections,
-                                       msg_key: :players,
-                                       locals: { players: round.players })
-
-                WSController.send_msg_to_player_in_game(player: username, game:session[:game])
-              end
-              #to here
-
             end
           end
         end
         ws.onclose do
-          WSController.sockets[session[:game]].delete(ws)
+          WSController.instance.delete_socket( ws, session[:game] ) 
           session.clear
         end
       end

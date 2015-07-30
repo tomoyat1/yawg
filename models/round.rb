@@ -1,3 +1,5 @@
+require 'observer'
+
 require_relative 'generic_role'
 require_relative 'villager'
 require_relative 'werewolf'
@@ -11,19 +13,25 @@ include Role
 include Phase
 
 class Round
+
+  include Observable
+
   attr_accessor :players
   attr_reader :name
   attr_reader :phases
 
-  def initialize(args)
-    @name = args[:name]
+  def initialize(name:)
+    @name = name
     @players = Hash.new
     @phases = Array.new
+    puts @name
   end
 
   def add_player(name)
     unless @players.key?(name) then
       @players.store(name, Player.new(name: name))
+      changed
+      notify_observers players: @players, round: self, players_changed: true
     else
       raise "Player already in group"
     end
@@ -56,10 +64,13 @@ class Round
       role = player.role.shown_name
     end
 
+    changed
+    notify_observers players: @players, round: self, round_start: true
+
   end
 
-  def action_name_of_player(name)
-    @phases.last.current_action_name_of_player(@players[name])
+  def action_name_of_player(player)
+    @phases.last.current_action_name_of_player(player)
   end
 
   def add_action_to_queue(hash)
