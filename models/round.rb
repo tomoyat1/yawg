@@ -5,6 +5,8 @@ require_relative 'generic_phase'
 require_relative 'day'
 require_relative 'night'
 
+require_relative '../ws_controller'
+
 include Role
 include Phase
 
@@ -49,6 +51,11 @@ class Round
     @players.values.each_index do |i|
       @players.values[i].role = Role.const_get(role_array[i])
     end
+    
+    @players.each do |username, player|
+      role = player.role.shown_name
+    end
+
   end
 
   def action_name_of_player(name)

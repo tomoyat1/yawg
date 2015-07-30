@@ -5,6 +5,8 @@ require 'sinatra/reloader'
 require 'json'
 require_relative 'models/init'
 
+require_relative 'ws_controller'
+
 class Yawg < Sinatra::Base
 
   configure :development do
@@ -12,7 +14,6 @@ class Yawg < Sinatra::Base
   end
 
   set :server, :thin
-  set :sockets, Hash.new
   
   set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
@@ -46,11 +47,28 @@ class Yawg < Sinatra::Base
         session[:username] = params[:username]
         session[:game] = params[:game]
 
-        settings.sockets[params[:game]].each do |username, s| 
-          s.send ({ action: 'pl_in_staging' ,player_list: erb(:player_list,
-              :layout => false,
-              :locals => {:players => @@rounds[session[:game]].players }) }.to_json)
+        @@rounds[params[:game]].players.each_key do |player|
+          WSController.add_to_next_msg(key: :action, value: 'pl_in_staging')
+
+          WSController.queue_erb(:player_list,
+                                 msg_key: :player_list,
+                                 locals: { players: @@rounds[session[:game]].players })
+
+          #msg = { :action => 'pl_in_staging', 
+          #        :player_list => erb(:player_list,
+          #                         :layout => false,
+          #                         :locals => {
+          #                           :players => @@rounds[session[:game]].players }) }
+          WSController.send_msg_to_player_in_game( player: player,
+                                                      game: params[:game] )
         end
+
+        #WSController.sockets[params[:game]].each do |username, s| 
+        #  s.send ({ action: 'pl_in_staging' ,player_list: erb(:player_list,
+        #      :layout => false,
+        #      :locals => {:players => @@rounds[session[:game]].players }) }.to_json)
+        #end
+
         info = :info_existing
         controls = :controls_staging_existing
       end
@@ -85,49 +103,48 @@ class Yawg < Sinatra::Base
     else
       request.websocket do |ws|
         ws.onopen do
-          unless settings.sockets.key?(session[:game]) then
-            settings.sockets.store(session[:game], Hash.new)
+          unless WSController.sockets.key?(session[:game]) then
+            WSController.sockets.store(session[:game], Hash.new)
           end
-          settings.sockets[session[:game]].store(session[:username], ws)
+          WSController.sockets[session[:game]].store(session[:username], ws)
         end
         ws.onmessage do |msg|
-          #parse whatever json that gets thrown at us
           msg_hash = JSON.parse(msg)
           if msg_hash.assoc('command') then
             if msg_hash['command'] == 'start' then
-              round = @@rounds[session[:game]
+              round = @@rounds[session[:game]]
 
               role_count = msg_hash['role_count']
               round.init_round(role_count)
-              settings.sockets[session[:game]].each do |username, s|
+
+                #refactor from here
+              WSController.sockets[session[:game]].each do |username, s|
+                WSController.add_to_next_msg(key: :action, value: 'in_game')
+
+                WSController.add_to_next_msg(key: :phase, value: round.phases.last.shown_name)
+
                 role = round.player(username).role.shown_name
                 role_msg = format_info "Your role is #{role}"
+                WSController.add_to_next_msg(key: :info, value: role_msg)
 
-                controls = erb :controls_game,
-                                :layout => false,
-                                :locals => { :action_name => @@rounds[session[:game]].action_name_of_player(session[:username])}
+                WSController.queue_erb(:controls_game,
+                                       msg_key: :controls,
+                                       locals: { action_name: @@rounds[session[:game]].action_name_of_player(session[:username]) })
 
-                players = erb :player_list_with_selections,
-                              :layout => false,
-                              :locals => { :players => round.players }
+                WSController.queue_erb(:player_list_with_selections,
+                                       msg_key: :players,
+                                       locals: { players: round.players })
 
-                s.send({ action: 'in_game', 
-                         phase: round.phases.last.shown_name,
-                         info: role_msg,
-                         controls: controls,
-                         players: players }.to_json)
-
-                until round.player(username).info_list.length == 0
-                  info = round.player(username).info_list.shift
-                  s.send({ action: 'in_game',
-                           info: format_info(info) }.to_json)
-                end
+                WSController.send_msg_to_player_in_game(player: username, game:session[:game])
               end
+              #to here
+
             end
           end
         end
         ws.onclose do
-          settings.sockets[session[:game]].delete(ws)
+          WSController.sockets[session[:game]].delete(ws)
+          session.clear
         end
       end
     end
