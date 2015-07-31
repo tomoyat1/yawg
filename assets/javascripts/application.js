@@ -61,8 +61,45 @@ function game() {
             $("div.player-list").fadeOut(50, function() {
               $(this).html(data_in.players);
               $(this).fadeIn(50);
+              $("button.quad-state").click(function() {
+                var clicked_button = $(this);
+                target = clicked_button.attr('data-target');
+                score = parseInt(clicked_button.attr('data-score'));
+                if (score < 3) {
+                  clicked_button.attr('data-score', ++score);
+                } else {
+                  score = 0
+                  clicked_button.attr('data-score', score);
+                }
+
+                switch (score) {
+                  case 0: 
+                    clicked_button.removeClass("list-group-item-danger");
+                    break;
+                  case 1:
+                    clicked_button.addClass("list-group-item-success");
+                    break;
+                  case 2:
+                    clicked_button.removeClass("list-group-item-success");
+                    clicked_button.addClass("list-group-item-warning");
+                    break;
+                  case 3: 
+                    clicked_button.removeClass("list-group-item-warning");
+                    clicked_button.addClass("list-group-item-danger");
+                    break;
+                }
+
+                var data_out = {
+                  command: 'quad_state_score',
+                  target: target,
+                  score: score
+                };
+                socket.send("" + JSON.stringify(data_out));
+              });
             });
           }
+        } else if (data_in.action == 'quad_state_score') {
+          $("button.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
         }
       }
     }

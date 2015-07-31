@@ -4,6 +4,7 @@ require 'tilt'
 class WSController
 
   include Singleton
+  include Role
 
   attr_reader :sockets
 
@@ -19,8 +20,8 @@ class WSController
     @sockets[round_name].store(player_name, ws)
   end
 
-  def delete_socket(ws, round_name)
-    @sockets[round_name].delete ws
+  def delete_socket(username, round_name)
+    @sockets[round_name].delete username
   end
 
   def add_to_next_msg(key:, value:)
@@ -51,6 +52,8 @@ class WSController
       send_player_list(players, round)
     elsif args[:round_start] then
       send_game_ui(players, round)
+    elsif args[:werewolf_realtime] then
+      send_hit_list_w(players, round, args[:changed])
     end
   end
 
@@ -70,14 +73,33 @@ class WSController
       add_to_next_msg( key: :action, value: 'in_game' )
       add_to_next_msg( key: :phase, value: round.phases.last.shown_name )
       
-      role_msg = format_info "Your role is #{player.role.shown_name}"
+      role_msg = format_info "Your role is #{player.role.name}"
       add_to_next_msg( key: :info, value: role_msg )
       queue_erb( :controls_game, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )
-      queue_erb( :player_list_with_selections, msg_key: :players,
+
+      if player.player_list_f == 'quadstate' then
+        player_list = :player_list_with_selections_quadstate
+      else
+        player_list = :player_list_with_selections
+      end
+      queue_erb( player_list, msg_key: :players,
                           locals: { players: round.players } )
+
       send_msg_to_player_in_game( player: player, game: round )
 
+    end
+  end
+
+  def send_hit_list_w(players, round, changed)
+    players.each_value do |player|
+      if player.role == Werewolf.instance then
+        add_to_next_msg( key: :action, value: 'quad_state_score' )
+        add_to_next_msg( key: :player, value: changed )
+        new_score = Werewolf.instance.realtime_hitlist[changed]['total']
+        add_to_next_msg( key: :score, value: new_score )
+        send_msg_to_player_in_game( player: player, game: round )
+      end
     end
   end
 

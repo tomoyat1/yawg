@@ -15,8 +15,8 @@
     <% GenericRole.desendants.each do |desendant| %>
       <div class="list-group-item">
         <div class="input-group">
-          <span class="input-group-addon"><%= desendant %></span>
-          <input class="form-control role-count" type="number" name="<%= desendant %>" min="0" value="0">
+          <span class="input-group-addon"><%= desendant.instance.name %></span>
+          <input class="form-control role-count" type="number" name="<%= desendant.instance.name %>" min="0" value="0">
         </div>
       </div>
     <% end %>

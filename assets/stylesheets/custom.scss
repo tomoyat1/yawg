@@ -9,3 +9,9 @@ div.info {
     }
   }
 }
+
+.list-group-item:active,
+  .list-group-item:active:focus,
+  .list-group-item:focus {
+    outline: none
+}

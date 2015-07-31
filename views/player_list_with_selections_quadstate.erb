@@ -4,8 +4,8 @@
   </div>
   <div class="list-group">
     <% players.each_key do |key| %>
-      <button class="list-group-item" data-target="<%= key %>">
-        <%= key %>
+      <button class="list-group-item quad-state" data-target="<%= key %>" data-score="0">
+        <%= key %><span class="badge">0</span>
       </button>
     <% end %>
   </div>

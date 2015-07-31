@@ -47,7 +47,6 @@ class Yawg < Sinatra::Base
         session[:username] = params[:username]
         session[:game] = params[:game]
 
-
         info = :info_existing
         controls = :controls_staging_existing
       end
@@ -79,7 +78,7 @@ class Yawg < Sinatra::Base
 
   get '/game/status' do
     unless request.websocket?
-     halt 500
+      halt 500
     else
       request.websocket do |ws|
         ws.onopen do
@@ -87,17 +86,22 @@ class Yawg < Sinatra::Base
         end
         ws.onmessage do |msg|
           msg_hash = JSON.parse(msg)
-          if msg_hash.assoc('command') then
+          if msg_hash.key?('command') then
+            round = @@rounds[session[:game]]
             if msg_hash['command'] == 'start' then
-              round = @@rounds[session[:game]]
-
               role_count = msg_hash['role_count']
               round.init_round(role_count)
+
+            elsif msg_hash['command'] == 'quad_state_score' then
+              extracted_score = { target: msg_hash['target'],
+                                  score: msg_hash['score'] }
+              round.realtime_handler(player_name: session[:username],
+                                     data: extracted_score)
             end
           end
         end
         ws.onclose do
-          WSController.instance.delete_socket( ws, session[:game] ) 
+          WSController.instance.delete_socket(session[:username], session[:game]) 
           session.clear
         end
       end
@@ -111,16 +115,7 @@ class Yawg < Sinatra::Base
   end
 
 # Routing for development. Everything below is temporary.
-  get '/new/game/:game_name' do
-    added = @@rounds.store(params[:game_name], Round.new) 
-  end
 
-  get '/new/player/:name' do
-  end
-
-  get '/round/start/:game' do
-    @@rounds[params[:game]].init_round( Villager: 3, Werewolf: 1 )
-  end
-  
+# Oops, spoke too soon. Below is NOT temporary.
   run! if app_file == $0
 end

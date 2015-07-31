@@ -24,7 +24,6 @@ class Round
     @name = name
     @players = Hash.new
     @phases = Array.new
-    puts @name
   end
 
   def add_player(name)
@@ -57,16 +56,11 @@ class Round
     end
     role_array.shuffle!
     @players.values.each_index do |i|
-      @players.values[i].role = Role.const_get(role_array[i])
+      @players.values[i].role = Role.const_get(role_array[i]).instance
     end
     
-    @players.each do |username, player|
-      role = player.role.shown_name
-    end
-
     changed
     notify_observers players: @players, round: self, round_start: true
-
   end
 
   def action_name_of_player(player)
@@ -74,6 +68,18 @@ class Round
   end
 
   def add_action_to_queue(hash)
-    @phases
+  end
+
+  def realtime_handler(player_name:, data:)
+    if @players[player_name].role == Werewolf.instance then
+      target = Werewolf.instance.update_hitlist(player_name: player_name,
+                                       target: data[:target],
+                                       score: data[:score])
+      changed
+      notify_observers(players: @players,
+                       round: self,
+                       werewolf_realtime: true,
+                       changed: target)
+    end
   end
 end

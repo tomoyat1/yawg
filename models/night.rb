@@ -4,8 +4,8 @@ module Phase
   class Night < GenericPhase
 
     def execute_actions
-      @action_hash.each do |key, value|
-         key.execute_action(value)
+      @action_queue.each do |action_descriptor|
+        
       end
     end
 
