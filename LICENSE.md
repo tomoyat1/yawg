@@ -1,4 +1,4 @@
-Copyright (c) 2015, Tomoya Tabuchi
+Copyright (c) 2015, Tomoya Tabuchi  
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
