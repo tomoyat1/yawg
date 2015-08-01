@@ -12,5 +12,14 @@ module Phase
     def current_action_name_of_player(player)
       player.role.night_action_name
     end
+
+    def realtime_action_handler(player:, data:)
+      if player.role == Werewolf.instance then
+        target = Werewolf.instance.update_hitlist(player_name: player.name,
+                                         target: data[:target],
+                                         score: data[:score])
+        target
+      end
+    end
   end
 end

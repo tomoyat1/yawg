@@ -71,15 +71,12 @@ class Round
   end
 
   def realtime_handler(player_name:, data:)
-    if @players[player_name].role == Werewolf.instance then
-      target = Werewolf.instance.update_hitlist(player_name: player_name,
-                                       target: data[:target],
-                                       score: data[:score])
+      target = @phases.last.realtime_action_handler( player: @players[player_name],
+                                                     data: data )
       changed
       notify_observers(players: @players,
                        round: self,
                        werewolf_realtime: true,
                        changed: target)
-    end
   end
 end

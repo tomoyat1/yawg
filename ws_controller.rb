@@ -78,13 +78,16 @@ class WSController
       queue_erb( :controls_game, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )
 
-      if player.player_list_f == 'quadstate' then
+      if player.role.player_list_f == 'quadstate' then
         player_list = :player_list_with_selections_quadstate
-      else
+      elsif player.role.player_list_f == 'singleselect'
         player_list = :player_list_with_selections
+      else
+        player_list = :player_list
       end
+      pl_without_self = round.players.reject {|key, value| value == player }
       queue_erb( player_list, msg_key: :players,
-                          locals: { players: round.players } )
+                          locals: { players: pl_without_self } )
 
       send_msg_to_player_in_game( player: player, game: round )
 
@@ -96,8 +99,11 @@ class WSController
       if player.role == Werewolf.instance then
         add_to_next_msg( key: :action, value: 'quad_state_score' )
         add_to_next_msg( key: :player, value: changed )
-        new_score = Werewolf.instance.realtime_hitlist[changed]['total']
+        target_scores = Werewolf.instance.realtime_hitlist[changed]
+        new_score = target_scores['total']
+        specifics = target_scores.reject {|key, value| key == 'total' }
         add_to_next_msg( key: :score, value: new_score )
+        add_to_next_msg( key: :specifics, value: specifics )
         send_msg_to_player_in_game( player: player, game: round )
       end
     end

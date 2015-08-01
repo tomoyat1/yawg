@@ -25,9 +25,14 @@ module Role
 
     def add_player(player)
       @players << player.name
-      if player.role == Werewolf.instance then
-        return 'quadstate'
-      end
+    end
+
+    def player_list_f
+      'noselect'
+    end
+
+    def action_instant?
+      false
     end
 
     def day_action_name
@@ -36,6 +41,10 @@ module Role
 
     def night_action_name
       nil
+    end
+
+    def divine
+      "Villager side"
     end
   end
 end

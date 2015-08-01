@@ -1,4 +1,5 @@
 // = require jquery/dist/jquery.min.js
+// = require bootstrap-sass/assets/javascripts/bootstrap.min.js
 
 $(function() {
   if (window.location.pathname.match(/staging_/))
@@ -61,31 +62,32 @@ function game() {
             $("div.player-list").fadeOut(50, function() {
               $(this).html(data_in.players);
               $(this).fadeIn(50);
-              $("button.quad-state").click(function() {
-                var clicked_button = $(this);
-                target = clicked_button.attr('data-target');
-                score = parseInt(clicked_button.attr('data-score'));
+
+              $("li.quad-state").click(function() {
+                var clicked = $(this);
+                target = clicked.attr('data-target');
+                score = parseInt(clicked.attr('data-score'));
                 if (score < 3) {
-                  clicked_button.attr('data-score', ++score);
+                  clicked.attr('data-score', ++score);
                 } else {
                   score = 0
-                  clicked_button.attr('data-score', score);
+                  clicked.attr('data-score', score);
                 }
 
                 switch (score) {
                   case 0: 
-                    clicked_button.removeClass("list-group-item-danger");
+                    clicked.removeClass("list-group-item-danger");
                     break;
                   case 1:
-                    clicked_button.addClass("list-group-item-success");
+                    clicked.addClass("list-group-item-success");
                     break;
                   case 2:
-                    clicked_button.removeClass("list-group-item-success");
-                    clicked_button.addClass("list-group-item-warning");
+                    clicked.removeClass("list-group-item-success");
+                    clicked.addClass("list-group-item-warning");
                     break;
                   case 3: 
-                    clicked_button.removeClass("list-group-item-warning");
-                    clicked_button.addClass("list-group-item-danger");
+                    clicked.removeClass("list-group-item-warning");
+                    clicked.addClass("list-group-item-danger");
                     break;
                 }
 
@@ -96,10 +98,24 @@ function game() {
                 };
                 socket.send("" + JSON.stringify(data_out));
               });
+
+              $("li.quad-state > span.badge").click(function(e) {
+                e.stopPropagation();
+                $(this).parent().children(".specifics").collapse('toggle');
+              });
             });
           }
         } else if (data_in.action == 'quad_state_score') {
-          $("button.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
+          $("li.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
+
+          var s_hash = data_in.specifics
+          var s_list = $("li.quad-state[data-target='" + data_in.player + "']").find("ul");
+          s_list.empty();
+          for (var index in s_hash) {
+            if (s_hash.hasOwnProperty(index) && s_hash[index] != 0) {
+              s_list.append("<li>" + index +": " + s_hash[index] + "</li>");
+            }
+          }
         }
       }
     }

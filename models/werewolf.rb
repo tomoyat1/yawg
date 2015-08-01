@@ -13,12 +13,20 @@ module Role
       super
     end
 
+    def player_list_f
+      'quadstate'
+    end
+
     def execute_night_action(hitlist)
       hitlist.last.die
     end
 
     def night_action_name
       "Kill Player"
+    end
+
+    def divine
+      "Werewolf side"
     end
 
     def add_night_action_by_player(player:, action:)

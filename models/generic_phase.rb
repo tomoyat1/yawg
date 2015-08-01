@@ -24,5 +24,9 @@ module Phase
       player.role.day_action_name
     end
 
+    def realtime_action_handler(player:, data:)
+      #stub
+    end
+
   end
 end

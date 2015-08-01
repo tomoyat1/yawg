@@ -18,7 +18,7 @@ class Player
 
   def role=(role)
     @role = role
-    @player_list_f = role.add_player(self)
+    role.add_player(self)
   end
 
   def add_night_action(action)

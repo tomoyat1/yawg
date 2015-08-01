@@ -1,3 +1,12 @@
+@mixin noselect {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+}
+
 div.info {
   div.panel-body {
     height: 6em;
@@ -10,8 +19,16 @@ div.info {
   }
 }
 
-.list-group-item:active,
-  .list-group-item:active:focus,
-  .list-group-item:focus {
-    outline: none
+li.quad-state {
+  @include noselect;
+
+  > span.badge:hover {
+    cursor: pointer;
+  }
+
+  > div.specifics {
+    > ul {
+      list-style: none;
+    }
+  }
 }
