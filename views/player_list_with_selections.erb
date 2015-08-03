@@ -2,11 +2,11 @@
   <div class="panel-heading">
     Players
   </div>
-  <div class="list-group">
+  <ul class="list-group">
     <% players.each_key do |key| %>
-      <button class="list-group-item" data-target="<%= key %>">
+      <li class="list-group-item single-select" data-target="<%= key %>">
         <%= key %>
-      </button>
+      </li>
     <% end %>
-  </div>
+  </ul>
 </div>

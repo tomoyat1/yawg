@@ -25,4 +25,7 @@ class Player
     @role.add_night_action_by_player player: self.name, action: action
   end
 
+  def divine
+    @role.divine
+  end
 end

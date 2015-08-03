@@ -49,11 +49,13 @@ class WSController
 
   def update(players:, round:, **args)
     if args[:players_changed] and @sockets.size != 0 then
-      send_player_list(players, round)
+      send_player_list players, round
     elsif args[:round_start] then
-      send_game_ui(players, round)
+      send_game_ui players, round
     elsif args[:werewolf_realtime] then
-      send_hit_list_w(players, round, args[:changed])
+      send_hit_list_w players, round, args[:changed]
+    elsif args[:add_action] then
+      send_action_result players, round, args[:result]
     end
   end
 
@@ -109,8 +111,16 @@ class WSController
     end
   end
 
+  def send_action_result(players, round, result)
+    unless result.empty? then
+      add_to_next_msg key: :action, value: 'in_game'
+      msg = "#{result[:target].name}を占った結果は#{result[:role]}でした"
+      add_to_next_msg key: :info, value: format_info( msg )
+      send_msg_to_player_in_game player: result[:player], game: round
+    end
+  end
+
   def format_info(raw_string)
     "<div>#{raw_string}</div>"
   end
-
 end

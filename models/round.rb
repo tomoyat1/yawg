@@ -40,6 +40,10 @@ class Round
     @players[name]
   end
 
+  def current_phase
+    @phases.last
+  end
+
   def init_round(role_hash)
     @phases << Night.new(1)
 
@@ -64,15 +68,22 @@ class Round
   end
 
   def action_name_of_player(player)
-    @phases.last.current_action_name_of_player(player)
+    current_phase.current_action_name_of_player( player )
   end
 
-  def add_action_to_queue(hash)
+  def add_action_to_phase_queue(pt_pair)
+    result = Hash.new
+    pt_pair.each do |player_name, target_name|
+      result = current_phase.add_action player: player( player_name ),
+                                        target: player( target_name )
+    end
+    changed
+    notify_observers players: @players, round: self, add_action: true, result: result
   end
 
   def realtime_handler(player_name:, data:)
-      target = @phases.last.realtime_action_handler( player: @players[player_name],
-                                                     data: data )
+      target = current_phase.realtime_action_handler( player: player( player_name ),
+                                                      data: data )
       changed
       notify_observers(players: @players,
                        round: self,

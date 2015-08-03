@@ -19,8 +19,7 @@ module Role
 
     def initialize
       @players = Array.new
-      @day_action_queue = Hash.new
-      @night_action_queue = Hash.new
+      @action_queue = Array.new
     end
 
     def add_player(player)
@@ -41,6 +40,14 @@ module Role
 
     def night_action_name
       nil
+    end
+
+    def stage_action(target:)
+      @action_queue << target
+    end
+
+    def execute_actions
+      @action_queue = Array.new
     end
 
     def divine

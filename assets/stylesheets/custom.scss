@@ -19,6 +19,12 @@ div.info {
   }
 }
 
+button.list-group-item {
+  &:focus {
+    outline: none !important;
+  }
+}
+
 li.quad-state {
   @include noselect;
 
@@ -31,4 +37,8 @@ li.quad-state {
       list-style: none;
     }
   }
+}
+
+li.single-select {
+  @include noselect;
 }

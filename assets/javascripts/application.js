@@ -56,6 +56,7 @@ function game() {
             $("div.controls").fadeOut(50, function() {
               $(this).html(data_in.controls);
               $(this).fadeIn(50);
+              add_action_event_listeners(socket);
             });
           }
           if (data_in.players) {
@@ -63,46 +64,7 @@ function game() {
               $(this).html(data_in.players);
               $(this).fadeIn(50);
 
-              $("li.quad-state").click(function() {
-                var clicked = $(this);
-                target = clicked.attr('data-target');
-                score = parseInt(clicked.attr('data-score'));
-                if (score < 3) {
-                  clicked.attr('data-score', ++score);
-                } else {
-                  score = 0
-                  clicked.attr('data-score', score);
-                }
-
-                switch (score) {
-                  case 0: 
-                    clicked.removeClass("list-group-item-danger");
-                    break;
-                  case 1:
-                    clicked.addClass("list-group-item-success");
-                    break;
-                  case 2:
-                    clicked.removeClass("list-group-item-success");
-                    clicked.addClass("list-group-item-warning");
-                    break;
-                  case 3: 
-                    clicked.removeClass("list-group-item-warning");
-                    clicked.addClass("list-group-item-danger");
-                    break;
-                }
-
-                var data_out = {
-                  command: 'quad_state_score',
-                  target: target,
-                  score: score
-                };
-                socket.send("" + JSON.stringify(data_out));
-              });
-
-              $("li.quad-state > span.badge").click(function(e) {
-                e.stopPropagation();
-                $(this).parent().children(".specifics").collapse('toggle');
-              });
+              add_player_event_listeners(socket);
             });
           }
         } else if (data_in.action == 'quad_state_score') {
@@ -124,6 +86,10 @@ function game() {
     }
   }
 
+  add_staging_event_listeners(socket);
+}
+
+function add_staging_event_listeners(socket) {
   $("button.start").click(function() {
     var data_out = {
       command: "start"
@@ -133,5 +99,71 @@ function game() {
       data_out.role_count[$(this).attr("name")] = parseInt($(this).val(), 10);
     });
     socket.send("" + JSON.stringify(data_out));
+  });
+}
+
+function add_action_event_listeners(socket) {
+  $("button.action-name").click(function() {
+    var data_out = {
+      command: 'confirm_action',
+    }
+
+    $("li.single-select").each(function(index, element) {
+      if ($(element).attr("data-selected") == "true") {
+
+        data_out.target = $(element).attr("data-target");
+      }
+    });
+    socket.send("" + JSON.stringify(data_out));
+  });
+}
+
+function add_player_event_listeners(socket) {
+  $("li.single-select").click(function() {
+    $(this).parent().children("li").removeClass("list-group-item-info");
+    $(this).parent().children("li").attr("data-selected", false)
+    $(this).addClass("list-group-item-info");
+    $(this).attr("data-selected", true)
+  });
+
+  $("li.quad-state").click(function() {
+    var clicked = $(this);
+    target = clicked.attr('data-target');
+    score = parseInt(clicked.attr('data-score'));
+    if (score < 3) {
+      clicked.attr('data-score', ++score);
+    } else {
+      score = 0
+      clicked.attr('data-score', score);
+    }
+
+    switch (score) {
+      case 0: 
+        clicked.removeClass("list-group-item-danger");
+        break;
+      case 1:
+        clicked.addClass("list-group-item-success");
+        break;
+      case 2:
+        clicked.removeClass("list-group-item-success");
+        clicked.addClass("list-group-item-warning");
+        break;
+      case 3: 
+        clicked.removeClass("list-group-item-warning");
+        clicked.addClass("list-group-item-danger");
+        break;
+    }
+
+    var data_out = {
+      command: 'quad_state_score',
+      target: target,
+      score: score
+    };
+    socket.send("" + JSON.stringify(data_out));
+  });
+
+  $("li.quad-state > span.badge").click(function(e) {
+    e.stopPropagation();
+    $(this).parent().children(".specifics").collapse('toggle');
   });
 }

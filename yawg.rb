@@ -26,11 +26,7 @@ class Yawg < Sinatra::Base
   @@rounds = Hash.new
 
   get '/' do
-    if session[:username] then
-      'Session already exists'
-    else
-      erb :index, :locals => { :location => 'Top' }
-    end
+    login
   end
 
   post '/game' do
@@ -52,13 +48,13 @@ class Yawg < Sinatra::Base
       end
     elsif params[:existing] == 'false' then
       begin
-        if @@rounds.key?(params[:game]) then
+        if @@rounds.key?( params[:game] ) then
           raise 'Group already exists'
         end
       rescue => evar
         evar.message
       else
-        @@rounds.store(params[:game], Round.new(name: params[:game]))
+        @@rounds.store( params[:game], Round.new( name: params[:game] ) )
         @@rounds[params[:game]].add_observer(WSController.instance)
         @@rounds[params[:game]].add_player(params[:username])
 
@@ -85,30 +81,41 @@ class Yawg < Sinatra::Base
           WSController.instance.add_socket( ws, session[:username], session[:game] )
         end
         ws.onmessage do |msg|
-          msg_hash = JSON.parse(msg)
+          msg_hash = JSON.parse msg
           if msg_hash.key?('command') then
             round = @@rounds[session[:game]]
             if msg_hash['command'] == 'start' then
               role_count = msg_hash['role_count']
-              round.init_round(role_count)
-
+              round.init_round role_count
             elsif msg_hash['command'] == 'quad_state_score' then
               extracted_score = { target: msg_hash['target'],
                                   score: msg_hash['score'] }
-              round.realtime_handler(player_name: session[:username],
-                                     data: extracted_score)
+              round.realtime_handler( player_name: session[:username],
+                                      data: extracted_score )
+            elsif msg_hash['command'] == 'confirm_action' then
+              round.add_action_to_phase_queue( { session[:username] => msg_hash['target'] } )
             end
           end
         end
         ws.onclose do
+          puts "#{session[:username]} left."
           WSController.instance.delete_socket(session[:username], session[:game]) 
           session.clear
+          login
         end
       end
     end
   end
 
   helpers do
+    def login
+      if session[:username] then
+        'Session already exists'
+      else
+        erb :index, :locals => { :location => 'Top' }
+      end
+    end
+
     def format_info(raw_string)
       "<div>#{raw_string}</div>"
     end
