@@ -69,7 +69,8 @@ class Yawg < Sinatra::Base
     erb :game, :locals => { :location => 'Game',
                             :info => info,
                             :controls => controls,
-                            :players => @@rounds[session[:game]].players }
+                            :players => players,
+                            :roles => @@rounds[session[:game]].roles }
   end
 
   get '/game/status' do

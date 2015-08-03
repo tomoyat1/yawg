@@ -98,10 +98,10 @@ class WSController
 
   def send_hit_list_w(players, round, changed)
     players.each_value do |player|
-      if player.role == Werewolf.instance then
+      if player.role == round.roles['Werewolf'] then
         add_to_next_msg( key: :action, value: 'quad_state_score' )
         add_to_next_msg( key: :player, value: changed )
-        target_scores = Werewolf.instance.realtime_hitlist[changed]
+        target_scores = round.roles['Werewolf'].realtime_hitlist[changed]
         new_score = target_scores['total']
         specifics = target_scores.reject {|key, value| key == 'total' }
         add_to_next_msg( key: :score, value: new_score )
@@ -114,8 +114,7 @@ class WSController
   def send_action_result(players, round, result)
     unless result.empty? then
       add_to_next_msg key: :action, value: 'in_game'
-      msg = "#{result[:target].name}を占った結果は#{result[:role]}でした"
-      add_to_next_msg key: :info, value: format_info( msg )
+      add_to_next_msg key: :info, value: format_info( result[:msg] )
       send_msg_to_player_in_game player: result[:player], game: round
     end
   end

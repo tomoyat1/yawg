@@ -121,9 +121,9 @@ function add_action_event_listeners(socket) {
 function add_player_event_listeners(socket) {
   $("li.single-select").click(function() {
     $(this).parent().children("li").removeClass("list-group-item-info");
-    $(this).parent().children("li").attr("data-selected", false)
+    $(this).parent().children("li").attr("data-selected", "false")
     $(this).addClass("list-group-item-info");
-    $(this).attr("data-selected", true)
+    $(this).attr("data-selected", "true")
   });
 
   $("li.quad-state").click(function() {

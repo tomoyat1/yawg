@@ -1,13 +1,10 @@
-require 'singleton'
-
 module Role
   class GenericRole
-
-    include Singleton
 
     @@desendants = Array.new
 
     attr_reader :name
+    attr_accessor :owner
 
     def self.inherited(child)
       @@desendants << child
@@ -15,6 +12,10 @@ module Role
 
     def self.desendants
       @@desendants
+    end
+
+    def self.class_name
+      self.name.split('::').last || ''
     end
 
     def initialize
@@ -28,10 +29,6 @@ module Role
 
     def player_list_f
       'noselect'
-    end
-
-    def action_instant?
-      false
     end
 
     def day_action_name

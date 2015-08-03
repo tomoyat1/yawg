@@ -12,11 +12,11 @@
     Settings
   </div>
   <div class="list-group">
-    <% GenericRole.desendants.each do |desendant| %>
+    <% roles.each_value do |role| %>
       <div class="list-group-item">
         <div class="input-group">
-          <span class="input-group-addon"><%= desendant.instance.name %></span>
-          <input class="form-control role-count" type="number" name="<%= desendant.instance.name %>" min="0" value="0">
+          <span class="input-group-addon"><%= role.name %></span>
+          <input class="form-control role-count" type="number" name="<%= role.name %>" min="0" value="0">
         </div>
       </div>
     <% end %>

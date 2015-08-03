@@ -19,11 +19,15 @@ class Round
   attr_accessor :players
   attr_reader :name
   attr_reader :phases
+  attr_reader :roles
 
   def initialize(name:)
     @name = name
     @players = Hash.new
     @phases = Array.new
+    @roles = Hash.new
+
+    GenericRole.desendants.each{|desendant| add_role(desendant.new) }
   end
 
   def add_player(name)
@@ -44,8 +48,18 @@ class Round
     @phases.last
   end
 
+  def add_phase(phase)
+    phase.owner = self
+    @phases << phase
+  end
+
+  def add_role(role)
+    role.owner = self
+    @roles.store(role.class.class_name, role)
+  end
+
   def init_round(role_hash)
-    @phases << Night.new(1)
+    add_phase Night.new(1)
 
     role_array = Array.new
     role_hash.each do |key, value|
@@ -60,7 +74,7 @@ class Round
     end
     role_array.shuffle!
     @players.values.each_index do |i|
-      @players.values[i].role = Role.const_get(role_array[i]).instance
+      @players.values[i].role = @roles[role_array[i]]
     end
     
     changed

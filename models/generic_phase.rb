@@ -3,6 +3,7 @@ module Phase
 
     attr_reader :action_queue
     attr_reader :index
+    attr_accessor :owner
 
     def initialize(index)
       @index = index

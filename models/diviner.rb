@@ -1,10 +1,6 @@
-require 'singleton'
-
 module Role
   class Diviner < GenericRole
     
-    include Singleton
-
     def initialize
       @name = "Diviner"
       super
@@ -14,7 +10,7 @@ module Role
       'singleselect'
     end
 
-    def action_instant?
+    def night_action_direct?
       true
     end
 
@@ -24,8 +20,9 @@ module Role
 
     def execute_actions
       divine = @action_queue.last.divine
+      name = @action_queue.last.name
       super
-      divine
+      msg = "#{name}を占った結果#{divine}でした。"
     end
   end
 end

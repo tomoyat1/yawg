@@ -10,8 +10,6 @@ class Player
     @is_alive = true
   end
 
-  def 
-
   def die
     @is_alive = false
   end
