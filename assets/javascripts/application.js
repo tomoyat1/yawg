@@ -67,6 +67,13 @@ function game() {
               add_player_event_listeners(socket);
             });
           }
+        } else if (data_in.action == 'spirit') {
+          if (data_in.phase) {
+            $("h1.phase").fadeOut(50, function() {
+              $(this).text(data_in.phase);
+              $(this).fadeIn(50);
+            });
+          }
         } else if (data_in.action == 'quad_state_score') {
           $("li.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
 

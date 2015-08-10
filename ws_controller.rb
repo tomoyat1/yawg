@@ -1,4 +1,5 @@
 require 'singleton'
+require 'sass'
 require 'tilt'
 
 class WSController
@@ -52,10 +53,16 @@ class WSController
       send_player_list players, round
     elsif args[:round_start] then
       send_game_ui players, round
+    elsif args[:next_phase] then
+      send_phase players, round
+    elsif args[:spirit_world] then
+      send_spirit_world players, round
     elsif args[:werewolf_realtime] then
       send_hit_list_w players, round, args[:changed]
     elsif args[:add_action] then
       send_action_result players, round, args[:result]
+    elsif args[:timer_message] then
+      send_message players, round, args[:msg]
     end
   end
 
@@ -80,13 +87,8 @@ class WSController
       queue_erb( :controls_game, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )
 
-      if player.role.player_list_f == 'quadstate' then
-        player_list = :player_list_with_selections_quadstate
-      elsif player.role.player_list_f == 'singleselect'
-        player_list = :player_list_with_selections
-      else
-        player_list = :player_list
-      end
+      player_list = round.current_phase.get_player_list player
+
       pl_without_self = round.players.reject {|key, value| value == player }
       queue_erb( player_list, msg_key: :players,
                           locals: { players: pl_without_self } )
@@ -96,17 +98,39 @@ class WSController
     end
   end
 
+  def send_phase(players, round)
+    players.each_value do |player|
+      add_to_next_msg key: :action, value: 'in_game'
+      add_to_next_msg key: :phase, value: round.current_phase.shown_name
+      player_list = round.current_phase.get_player_list player
+      pl_without_self = round.players.reject {|key, value| value == player }
+      queue_erb( player_list, msg_key: :players,
+                          locals: { players: pl_without_self } )
+      queue_erb( :controls_game, msg_key: :controls, 
+                          locals: { action_name: round.action_name_of_player(player) } )
+      send_msg_to_player_in_game player: player, game: round
+    end
+  end
+
+  def send_spirit_world(players, round)
+    players.each_value do |player|
+      add_to_next_msg key: :action, value: 'spirit'
+      add_to_next_msg key: :phase, value: 'Spirit World'
+      send_msg_to_player_in_game player: player, game: round
+    end
+  end
+
   def send_hit_list_w(players, round, changed)
     players.each_value do |player|
       if player.role == round.roles['Werewolf'] then
-        add_to_next_msg( key: :action, value: 'quad_state_score' )
-        add_to_next_msg( key: :player, value: changed )
+        add_to_next_msg key: :action, value: 'quad_state_score'
+        add_to_next_msg key: :player, value: changed
         target_scores = round.roles['Werewolf'].realtime_hitlist[changed]
         new_score = target_scores['total']
         specifics = target_scores.reject {|key, value| key == 'total' }
-        add_to_next_msg( key: :score, value: new_score )
-        add_to_next_msg( key: :specifics, value: specifics )
-        send_msg_to_player_in_game( player: player, game: round )
+        add_to_next_msg key: :score, value: new_score
+        add_to_next_msg key: :specifics, value: specifics
+        send_msg_to_player_in_game player: player, game: round
       end
     end
   end
@@ -116,6 +140,14 @@ class WSController
       add_to_next_msg key: :action, value: 'in_game'
       add_to_next_msg key: :info, value: format_info( result[:msg] )
       send_msg_to_player_in_game player: result[:player], game: round
+    end
+  end
+
+  def send_message(players, round, msg)
+    players.each_value do |player|
+      add_to_next_msg key: :action, value: 'in_game'
+      add_to_next_msg key: :info, value: format_info( msg )
+      send_msg_to_player_in_game player: player, game: round
     end
   end
 

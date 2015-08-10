@@ -79,6 +79,27 @@ class Round
     
     changed
     notify_observers players: @players, round: self, round_start: true
+    current_phase.start_phase
+  end
+
+  def next_phase
+    current_phase.end_phase
+    @roles['Werewolf'].reset_state
+    #@roles['Knight'].reset_state
+    if current_phase.class == Night then
+      add_phase Day.new( current_phase.index )
+    else
+      add_phase Night.new( current_phase.index + 1 )
+    end
+
+    current_phase.start_phase
+    alive = @players.select {|key, value| value.is_alive }
+    changed
+    notify_observers players: alive, round: self, next_phase: true
+
+    dead = @players.select {|key, value| !value.is_alive }
+    changed
+    notify_observers players: dead, round: self, spirit_world: true
   end
 
   def action_name_of_player(player)
@@ -88,8 +109,10 @@ class Round
   def add_action_to_phase_queue(pt_pair)
     result = Hash.new
     pt_pair.each do |player_name, target_name|
-      result = current_phase.add_action player: player( player_name ),
-                                        target: player( target_name )
+      unless target_name == '' then
+        result = current_phase.add_action player: player( player_name ),
+                                          target: player( target_name )
+      end
     end
     changed
     notify_observers players: @players, round: self, add_action: true, result: result
@@ -99,9 +122,17 @@ class Round
       target = current_phase.realtime_action_handler( player: player( player_name ),
                                                       data: data )
       changed
-      notify_observers(players: @players,
+      notify_observers players: @players,
                        round: self,
                        werewolf_realtime: true,
-                       changed: target)
+                       changed: target
+  end
+
+  def message(msg)
+    changed
+    notify_observers players: @players,
+                     round: self,
+                     timer_message: true,
+                     msg: msg
   end
 end

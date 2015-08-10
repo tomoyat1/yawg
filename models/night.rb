@@ -10,6 +10,7 @@ module Phase
         unless player.role.night_action_direct? then
           @action_queue << { player: player, target: target }
           result_str = player.role.indirect_confirm_string
+          @action_confirmed << player.name
         else
           player.role.stage_action target: target 
           result_str = player.role.execute_actions
@@ -17,13 +18,16 @@ module Phase
         result.store :player, player
         result.store :target, target
         result.store :msg, result_str
-        @action_confirmed << player.name
       end 
       result
     end
 
     def execute_non_imediate_actions
-      
+      super
+      role_hash = owner.roles
+      puts "Executing actions in order"
+      #role_hash['Knight'].execute_actions
+      role_hash['Werewolf'].execute_actions
     end
 
     def current_action_name_of_player(player)

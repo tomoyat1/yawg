@@ -21,6 +21,11 @@ module Role
     def initialize
       @players = Array.new
       @action_queue = Array.new
+      @day_action_name = '投票する'
+      @night_action_name = nil
+      @player_list_f = :player_list
+      @night_action_direct = false
+      @divine_result = '市民'
     end
 
     def add_player(player)
@@ -28,15 +33,19 @@ module Role
     end
 
     def player_list_f
-      'noselect'
+      @player_list_f
+    end
+
+    def night_action_direct?
+      @night_action_direct
     end
 
     def day_action_name
-      "Vote to kill player"
+      @day_action_name
     end
 
     def night_action_name
-      nil
+      @night_action_name
     end
 
     def stage_action(target:)
@@ -44,11 +53,12 @@ module Role
     end
 
     def execute_actions
-      @action_queue = Array.new
+      #stub
     end
 
     def divine
-      "Villager side"
+      @divine_result
     end
+
   end
 end

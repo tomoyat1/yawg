@@ -4,18 +4,13 @@ module Role
     attr_reader :realtime_hitlist
 
     def initialize
+      super
       @name = "Werewolf"
       @realtime_hitlist = Hash.new
-      @action_queue = Hash.new
-      super
-    end
-
-    def player_list_f
-      'quadstate'
-    end
-
-    def night_action_direct?
-      false
+      @action_queue = Array.new
+      @night_action_name = "殺害候補を確定する"
+      @player_list_f = :player_list_with_selections_quadstate
+      @divine_result = "人狼"
     end
 
     def indirect_confirm_string
@@ -23,29 +18,28 @@ module Role
     end
 
     def execute_actions
+      puts "Executing werewolf action"
       score_hash = Hash.new
-      max = 0
       kill_queue = Array.new
       @realtime_hitlist.each do |target, hash|
         score_hash.store target, 0
         hash.each do |player, score|
           score_hash[target] += score
         end
-        if score_hash[target] >= max then
-          max = score_hash[target]
+        max = score_hash.values.max
+        if score_hash[target] == max then
           kill_queue << owner.player( target )
         end
       end
-      kill_queue.shuffle!
-      kill_queue.first.die
-    end
-
-    def night_action_name
-      "Kill Player"
-    end
-
-    def divine
-      "Werewolf side"
+      unless kill_queue.empty? then
+        kill_queue.shuffle!
+        kill_queue.last.die
+        killed_name = kill_queue.last.name
+        puts "#{killed_name}は殺されました"
+        owner.message "#{killed_name}は殺されました。"
+      else
+        owner.message "人狼達は誰を殺すか合意できなかったようです..."
+      end
     end
 
     def update_hitlist(player_name:, target_name:, score:)

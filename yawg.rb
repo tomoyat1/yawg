@@ -9,11 +9,13 @@ require_relative 'ws_controller'
 
 class Yawg < Sinatra::Base
 
+  set :environment, :development
+
   configure :development do
     register Sinatra::Reloader
   end
 
-  set :server, :thin
+  set :server, 'thin'
   
   set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
