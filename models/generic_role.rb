@@ -5,6 +5,8 @@ module Role
 
     attr_reader :name
     attr_accessor :owner
+    attr_reader :is_count_evil
+    attr_reader :is_side_evil
 
     def self.inherited(child)
       @@desendants << child
@@ -26,6 +28,8 @@ module Role
       @player_list_f = :player_list
       @night_action_direct = false
       @divine_result = '市民'
+      @is_count_evil = false
+      @is_side_evil = false
     end
 
     def add_player(player)

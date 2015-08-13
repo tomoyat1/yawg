@@ -26,6 +26,7 @@ class Round
     @players = Hash.new
     @phases = Array.new
     @roles = Hash.new
+    @round_survey = Hash.new
 
     GenericRole.desendants.each{|desendant| add_role(desendant.new) }
   end
@@ -51,6 +52,8 @@ class Round
   def add_phase(phase)
     phase.owner = self
     @phases << phase
+    @round_survey.store :good, 0
+    @round_survey.store :evil, 0
   end
 
   def add_role(role)
@@ -84,36 +87,73 @@ class Round
 
   def next_phase
     current_phase.end_phase
-    @roles['Werewolf'].reset_state
-    #@roles['Knight'].reset_state
-    if current_phase.class == Night then
-      add_phase Day.new( current_phase.index )
+    execute_survey
+    if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
+      @roles['Werewolf'].reset_state
+      #@roles['Knight'].reset_state
+      if current_phase.class == Night then
+        add_phase Day.new( current_phase.index )
+      else
+        add_phase Night.new( current_phase.index + 1 )
+      end
+
+      current_phase.start_phase
+      alive = @players.select {|key, value| value.is_alive }
+      puts "alive"
+      puts alive.keys
+      changed
+      notify_observers players: alive, round: self, next_phase: true
+
+      dead = @players.select {|key, value| !value.is_alive }
+      puts "dead"
+      puts dead.keys
+      changed
+      notify_observers players: dead, round: self, spirit_world: true
     else
-      add_phase Night.new( current_phase.index + 1 )
+      end_round
     end
+  end
+  
+  def execute_survey
+    players.each_value do |player|
+      if player.is_alive then
+        if player.role.is_count_evil then
+          @round_survey[:evil] += 1
+        else
+          @round_survey[:good] += 1
+        end
+      end
+    end
+  end
 
-    current_phase.start_phase
-    alive = @players.select {|key, value| value.is_alive }
-    changed
-    notify_observers players: alive, round: self, next_phase: true
+  def end_round
+    winner_msg = ''
+    if @round_survey[:evil] == 0 then
+      winner_msg = '人狼側の勝利です'
+    elsif @round_survey[:evil] >= @round_survey[:good] then
+      winner_msg = '村人側の勝利です'
+    end
+    puts winner_msg
 
-    dead = @players.select {|key, value| !value.is_alive }
     changed
-    notify_observers players: dead, round: self, spirit_world: true
+    notify_observers players: @players,
+                     round: self,
+                     round_over: true,
+                     winner_msg: winner_msg
   end
 
   def action_name_of_player(player)
     current_phase.current_action_name_of_player( player )
   end
 
-  def add_action_to_phase_queue(pt_pair)
+  def add_action_to_phase_queue(player_name:, target_names:)
     result = Hash.new
-    pt_pair.each do |player_name, target_name|
-      unless target_name == '' then
-        result = current_phase.add_action player: player( player_name ),
-                                          target: player( target_name )
-      end
+    targets = Array.new
+    target_names.each do |target_name|
+      targets << player( target_name )
     end
+    result = current_phase.add_action player: player( player_name ),
+                                      targets: targets 
     changed
     notify_observers players: @players, round: self, add_action: true, result: result
   end

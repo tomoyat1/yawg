@@ -96,7 +96,9 @@ class Yawg < Sinatra::Base
               round.realtime_handler( player_name: session[:username],
                                       data: extracted_score )
             elsif msg_hash['command'] == 'confirm_action' then
-              round.add_action_to_phase_queue( { session[:username] => msg_hash['target'] } )
+              puts msg_hash['targets']
+              round.add_action_to_phase_queue player_name: session[:username],
+                                              target_names: msg_hash['targets']
             end
           end
         end

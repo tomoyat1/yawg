@@ -57,6 +57,8 @@ class WSController
       send_phase players, round
     elsif args[:spirit_world] then
       send_spirit_world players, round
+    elsif args[:round_over] then
+      send_round_result players, round, args[:winner_msg]
     elsif args[:werewolf_realtime] then
       send_hit_list_w players, round, args[:changed]
     elsif args[:add_action] then
@@ -103,7 +105,7 @@ class WSController
       add_to_next_msg key: :action, value: 'in_game'
       add_to_next_msg key: :phase, value: round.current_phase.shown_name
       player_list = round.current_phase.get_player_list player
-      pl_without_self = round.players.reject {|key, value| value == player }
+      pl_without_self = players.reject {|key, value| value == player }
       queue_erb( player_list, msg_key: :players,
                           locals: { players: pl_without_self } )
       queue_erb( :controls_game, msg_key: :controls, 
@@ -116,6 +118,16 @@ class WSController
     players.each_value do |player|
       add_to_next_msg key: :action, value: 'spirit'
       add_to_next_msg key: :phase, value: 'Spirit World'
+      queue_erb( :player_list, msg_key: players,
+                              locals: { players: round.players } )
+      send_msg_to_player_in_game player: player, game: round
+    end
+  end
+
+  def send_round_result (players, round, winner_msg)
+    players.each_value do |player|
+      add_to_next_msg key: :action, value: 'round_result'
+      add_to_next_msg key: :phase, value: winner_msg
       send_msg_to_player_in_game player: player, game: round
     end
   end

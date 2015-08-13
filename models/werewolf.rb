@@ -11,6 +11,8 @@ module Role
       @night_action_name = "殺害候補を確定する"
       @player_list_f = :player_list_with_selections_quadstate
       @divine_result = "人狼"
+      @is_count_evil = true
+      @is_side_evil = true
     end
 
     def indirect_confirm_string
@@ -18,7 +20,6 @@ module Role
     end
 
     def execute_actions
-      puts "Executing werewolf action"
       score_hash = Hash.new
       kill_queue = Array.new
       @realtime_hitlist.each do |target, hash|
@@ -35,7 +36,6 @@ module Role
         kill_queue.shuffle!
         kill_queue.last.die
         killed_name = kill_queue.last.name
-        puts "#{killed_name}は殺されました"
         owner.message "#{killed_name}は殺されました。"
       else
         owner.message "人狼達は誰を殺すか合意できなかったようです..."

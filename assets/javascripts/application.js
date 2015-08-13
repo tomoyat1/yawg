@@ -74,6 +74,13 @@ function game() {
               $(this).fadeIn(50);
             });
           }
+        } else if (data_in.action == 'round_result') {
+          if (data_in.phase) {
+            $("h1.phase").fadeOut(50, function() {
+              $(this).text(data_in.phase);
+              $(this).fadeIn(50);
+            });
+          }
         } else if (data_in.action == 'quad_state_score') {
           $("li.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
 
@@ -114,13 +121,23 @@ function add_action_event_listeners(socket) {
     var data_out = {
       command: 'confirm_action',
     }
+    data_out.targets = new Array;
 
     $("li.single-select").each(function(index, element) {
-      if ($(element).attr("data-selected") == "true") {
-
-        data_out.target = $(element).attr("data-target");
-      }
+      if ($(element).attr("data-selected") == "true")
+        data_out.targets.push($(element).attr("data-target"));
     });
+
+    $("li.quad-state").each(function(index, element) {
+      target = $(element).attr('data-target');
+      score = parseInt($(element).attr('data-score'));
+      for (i = 0; i < score; i++)
+        data_out.targets.push(target);
+    });
+
+    if (data_out.targets.length == 0)
+      data_out.targets.push('');
+
     socket.send("" + JSON.stringify(data_out));
   });
 }

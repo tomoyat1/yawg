@@ -3,11 +3,11 @@ require_relative 'generic_phase'
 module Phase
   class Day < GenericPhase
 
-    def add_action(player:, target:)
+    def add_action(player:, targets:)
       result = Hash.new
       if @action_confirmed.index( player.name ) == nil then
-        unless target == nil then
-          @action_queue << target
+        unless targets[0] == nil then
+          @action_queue << targets[1]
           result.store :msg, '投票を受け付けました。'
         else
           result.store :msg, '投票する人を選んでください。'

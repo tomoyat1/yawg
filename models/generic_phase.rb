@@ -14,7 +14,7 @@ module Phase
 
     def start_phase
       owner.message "残り#{@clock}分です。"
-      tick = EM.add_periodic_timer(5) do
+      tick = EM.add_periodic_timer(15) do
         @clock-=1
         unless @clock <= 0 then
           owner.message "残り#{@clock}分です。"
