@@ -1,8 +1,9 @@
 module Role
   class Villager < GenericRole
-
-    def gen_role_action
-      puts "Villager has nothing to do"
+    
+    def initialize
+      @name = "Villager"
+      super
     end
 
   end

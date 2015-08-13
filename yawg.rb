@@ -5,14 +5,17 @@ require 'sinatra/reloader'
 require 'json'
 require_relative 'models/init'
 
+require_relative 'ws_controller'
+
 class Yawg < Sinatra::Base
+
+  set :environment, :development
 
   configure :development do
     register Sinatra::Reloader
   end
 
-  set :server, :thin
-  set :sockets, Hash.new
+  set :server, 'thin'
   
   set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
@@ -25,11 +28,7 @@ class Yawg < Sinatra::Base
   @@rounds = Hash.new
 
   get '/' do
-    if session[:username] then
-      'Session already exists'
-    else
-      erb :index, :locals => { :location => 'Top' }
-    end
+    login
   end
 
   post '/game' do
@@ -46,23 +45,19 @@ class Yawg < Sinatra::Base
         session[:username] = params[:username]
         session[:game] = params[:game]
 
-        settings.sockets[params[:game]].each do |username, s| 
-          s.send ({ player_list: erb(:player_list,
-              :layout => false,
-              :locals => {:players => @@rounds[session[:game]].players }) }.to_json)
-        end
         info = :info_existing
         controls = :controls_staging_existing
       end
     elsif params[:existing] == 'false' then
       begin
-        if @@rounds.key?(params[:game]) then
+        if @@rounds.key?( params[:game] ) then
           raise 'Group already exists'
         end
       rescue => evar
         evar.message
       else
-        @@rounds.store(params[:game], Round.new(name: params[:game]))
+        @@rounds.store( params[:game], Round.new( name: params[:game] ) )
+        @@rounds[params[:game]].add_observer(WSController.instance)
         @@rounds[params[:game]].add_player(params[:username])
 
         session[:username] = params[:username]
@@ -76,52 +71,63 @@ class Yawg < Sinatra::Base
     erb :game, :locals => { :location => 'Game',
                             :info => info,
                             :controls => controls,
-                            :players => @@rounds[session[:game]].players }
+                            :players => players,
+                            :roles => @@rounds[session[:game]].roles }
   end
 
   get '/game/status' do
     unless request.websocket?
-     halt 500
+      halt 500
     else
       request.websocket do |ws|
         ws.onopen do
-          unless settings.sockets.key?(session[:game]) then
-            settings.sockets.store(session[:game], Hash.new)
-          end
-          settings.sockets[session[:game]].store(session[:username], ws)
+          WSController.instance.add_socket( ws, session[:username], session[:game] )
         end
         ws.onmessage do |msg|
-          #parse whatever json that gets thrown at us
-          msg_hash = JSON.parse(msg)
-          if msg_hash.assoc('command') then
+          msg_hash = JSON.parse msg
+          if msg_hash.key?('command') then
+            round = @@rounds[session[:game]]
             if msg_hash['command'] == 'start' then
               role_count = msg_hash['role_count']
-              @@rounds[session[:game]].init_round(role_count)
-              settings.sockets[session[:game]].each do |username, s|
-                s.send({ phase: 'Day', 
-                         role: @@rounds[session[:game]].player(username).role.role_name }.to_json)
-              end
+              round.init_round role_count
+            elsif msg_hash['command'] == 'quad_state_score' then
+              extracted_score = { target: msg_hash['target'],
+                                  score: msg_hash['score'] }
+              round.realtime_handler( player_name: session[:username],
+                                      data: extracted_score )
+            elsif msg_hash['command'] == 'confirm_action' then
+              puts msg_hash['targets']
+              round.add_action_to_phase_queue player_name: session[:username],
+                                              target_names: msg_hash['targets']
             end
           end
         end
         ws.onclose do
-          settings.sockets[session[:game]].delete(ws)
+          puts "#{session[:username]} left."
+          WSController.instance.delete_socket(session[:username], session[:game]) 
+          session.clear
+          login
         end
       end
     end
   end
 
+  helpers do
+    def login
+      if session[:username] then
+        'Session already exists'
+      else
+        erb :index, :locals => { :location => 'Top' }
+      end
+    end
+
+    def format_info(raw_string)
+      "<div>#{raw_string}</div>"
+    end
+  end
+
 # Routing for development. Everything below is temporary.
-  get '/new/game/:game_name' do
-    added = @@rounds.store(params[:game_name], Round.new) 
-  end
 
-  get '/new/player/:name' do
-  end
-
-  get '/round/start/:game' do
-    @@rounds[params[:game]].init_round( Villager: 3, Werewolf: 1 )
-  end
-  
+# Oops, spoke too soon. Below is NOT temporary.
   run! if app_file == $0
 end

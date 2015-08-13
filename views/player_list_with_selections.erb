@@ -1,0 +1,12 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Players
+  </div>
+  <ul class="list-group">
+    <% players.each_key do |key| %>
+      <li class="list-group-item single-select" data-target="<%= key %>">
+        <%= key %>
+      </li>
+    <% end %>
+  </ul>
+</div>

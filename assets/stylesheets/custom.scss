@@ -1,0 +1,44 @@
+@mixin noselect {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+}
+
+div.info {
+  div.panel-body {
+    height: 6em;
+    padding: 1em;
+    overflow-y: hidden;
+
+    > div {
+      margin-top: 2em;
+    }
+  }
+}
+
+button.list-group-item {
+  &:focus {
+    outline: none !important;
+  }
+}
+
+li.quad-state {
+  @include noselect;
+
+  > span.badge:hover {
+    cursor: pointer;
+  }
+
+  > div.specifics {
+    > ul {
+      list-style: none;
+    }
+  }
+}
+
+li.single-select {
+  @include noselect;
+}
