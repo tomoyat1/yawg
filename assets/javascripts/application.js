@@ -4,8 +4,8 @@
 $(function() {
   if (window.location.pathname.match(/staging_/))
     player_list();
-  else if(window.location.pathname.match(/game/))
-    game();
+  else if(window.location.pathname.match(/round/))
+    round();
   //Match root if nothing else matches
   else 
     participation();
@@ -16,21 +16,21 @@ function participation() {
     e.preventDefault();
     var $form = $("form[data-existing=" + $(this).attr("data-existing") + "]");
 
-    if ($form.find("[name=username]").val() && $form.find("[name=game]").val()) {
+    if ($form.find("[name=username]").val() && $form.find("[name=round]").val()) {
       $form.submit();
     } else {
       if (!$form.find("[name=username]").val())
         $form.find("[name=username]").parent().addClass("has-error");
-      if (!$form.find("[name=game]").val())
-        $form.find("[name=game]").parent().addClass("has-error");
+      if (!$form.find("[name=round]").val())
+        $form.find("[name=round]").parent().addClass("has-error");
     }
   });
 }
 
-function game() {
+function round() {
   $("div.info div.panel-body")
     .scrollTop($("div.info div.panel-body > div").height());
-  var uri = "ws://" + location.host + "/game/status";
+  var uri = "ws://" + location.host + "/round/status";
   var socket = null;
 
   if (socket == null) {
@@ -40,7 +40,7 @@ function game() {
         var data_in = $.parseJSON(event.data);
         if (data_in.action == "pl_in_staging") {
           $(".player-list").html(data_in.player_list);
-        } else if (data_in.action == "in_game") {
+        } else if (data_in.action == "in_round") {
           if (data_in.phase) {
             $("h1.phase").fadeOut(50, function() {
               $(this).text(data_in.phase);
