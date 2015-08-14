@@ -3,7 +3,7 @@ module Role
 
     def initialize
       super
-      @name = "Diviner"
+      @name = "占い師"
       @night_action_name = '占う'
       @player_list_f = :player_list_with_selections
       @night_action_direct = true

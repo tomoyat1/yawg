@@ -99,16 +99,16 @@ class Round
 
       current_phase.start_phase
       alive = @players.select {|key, value| value.is_alive }
-      puts "alive"
-      puts alive.keys
       changed
       notify_observers players: alive, round: self, next_phase: true
 
       dead = @players.select {|key, value| !value.is_alive }
-      puts "dead"
-      puts dead.keys
       changed
       notify_observers players: dead, round: self, spirit_world: true
+
+      @round_survey.each_value do |value|
+        value = 0
+      end
     else
       end_round
     end
@@ -128,18 +128,25 @@ class Round
 
   def end_round
     winner_msg = ''
+    winners = Hash.new
+    losers = Hash.new
     if @round_survey[:evil] == 0 then
-      winner_msg = '人狼側の勝利です'
-    elsif @round_survey[:evil] >= @round_survey[:good] then
       winner_msg = '村人側の勝利です'
+      winners = @players.reject {|key, value| value.role.is_side_evil }
+      losers = @players.reject {|key, value| !value.role.is_side_evil }
+    elsif @round_survey[:evil] >= @round_survey[:good] then
+      winner_msg = '人狼側の勝利です'
+      winners = @players.reject {|key, value| !value.role.is_side_evil }
+      losers = @players.reject {|key, value| value.role.is_side_evil }
     end
-    puts winner_msg
 
     changed
     notify_observers players: @players,
                      round: self,
                      round_over: true,
-                     winner_msg: winner_msg
+                     winner_msg: winner_msg,
+                     winners: winners,
+                     losers: losers
   end
 
   def action_name_of_player(player)
