@@ -15,7 +15,7 @@ module Phase
     def start_phase
       owner.message "残り#{@clock}分です。"
       tick = EM.add_periodic_timer(15) do
-        @clock-=1
+        @clock -= 1
         unless @clock <= 0 then
           owner.message "残り#{@clock}分です。"
         else
@@ -54,6 +54,10 @@ module Phase
 
     def realtime_action_handler(player:, data:)
       #stub
+    end
+
+    def release_owner
+      @owner = nil
     end
 
   end

@@ -1,0 +1,8 @@
+<div class="list-group-item round-list-header">
+  ゲームを選択してください
+</div>
+<% rounds.each do |round| %>
+  <div class="list-group-item round" data-round="<%= round %>">
+    <%= round %>
+  </div>
+<% end %>

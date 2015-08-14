@@ -147,6 +147,7 @@ class Round
                      winner_msg: winner_msg,
                      winners: winners,
                      losers: losers
+    release_round
   end
 
   def action_name_of_player(player)
@@ -181,5 +182,22 @@ class Round
                      round: self,
                      timer_message: true,
                      msg: msg
+  end
+
+  def release_round
+    @roles.each_value do |role|
+      role.release_owner
+    end
+    @roles = nil
+
+    @players.each_value do |player|
+      player.release_role
+    end
+    @players = nil
+
+    @phases.each do |phase|
+      phase.release_owner
+    end
+    @phases = nil
   end
 end

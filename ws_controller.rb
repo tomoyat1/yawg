@@ -23,6 +23,9 @@ class WSController
 
   def delete_socket(username, round_name)
     @sockets[round_name].delete username
+    if @sockets[round_name].empty? then
+      @sockets.delete round_name
+    end
   end
 
   def add_to_next_msg(key:, value:)
@@ -33,7 +36,7 @@ class WSController
   end
 
   def send_msg_to_player_in_round(msg: @next_msg, player:, round:)
-    if @sockets[round.name].key?(player.name) then
+    if @sockets[round.name] && @sockets[round.name].key?(player.name) then
       @sockets[round.name][player.name].send(msg.to_json)
     end
     if msg == @next_msg then

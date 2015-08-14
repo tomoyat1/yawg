@@ -26,4 +26,8 @@ class Player
   def divine
     @role.divine
   end
+
+  def release_role
+    @role = nil
+  end
 end

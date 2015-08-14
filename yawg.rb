@@ -38,7 +38,7 @@ class Yawg < Sinatra::Base
           raise "Group does not exist"
         end
       rescue => evar
-        evar.message
+        return evar.message
       else
         @@rounds[params[:round]].add_player(params[:username])
 
@@ -54,7 +54,7 @@ class Yawg < Sinatra::Base
           raise 'Group already exists'
         end
       rescue => evar
-        evar.message
+        return evar.message
       else
         @@rounds.store( params[:round], Round.new( name: params[:round] ) )
         @@rounds[params[:round]].add_observer(WSController.instance)
@@ -76,6 +76,10 @@ class Yawg < Sinatra::Base
   end
 
   get '/round' do
+  end
+
+  get '/round/list' do
+    erb :round_list, :layout => false, :locals => { :rounds => @@rounds.keys }
   end
 
   get '/round/status' do
@@ -113,6 +117,8 @@ class Yawg < Sinatra::Base
   end
 
   get '/round/exit' do
+    @@rounds.reject!{ |key, value| key == session[:round] }
+    puts "Released round #{session[:round]}"
     session.clear
     '<script>window.location = "/"</script>'
   end
@@ -120,7 +126,7 @@ class Yawg < Sinatra::Base
   helpers do
     def login
       if session[:username] then
-        erb :reconnect, :locals => { :location => 'Reconnect' }
+        erb :reconnect, :locals => { :location => 'Reconnect', :round => session[:round] }
       else
         erb :index, :locals => { :location => 'Top' }
       end

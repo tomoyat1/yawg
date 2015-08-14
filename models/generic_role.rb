@@ -64,5 +64,9 @@ module Role
       @divine_result
     end
 
+    def release_owner
+      @owner = nil
+    end
+
   end
 end
