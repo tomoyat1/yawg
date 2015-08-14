@@ -5,7 +5,7 @@ module Role
 
     def initialize
       super
-      @name = "Werewolf"
+      @name = "人狼"
       @realtime_hitlist = Hash.new
       @action_queue = Array.new
       @night_action_name = "殺害候補を確定する"

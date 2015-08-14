@@ -81,6 +81,19 @@ function game() {
               $(this).fadeIn(50);
             });
           }
+          if (data_in.players) {
+            $("div.player-list").fadeOut(50, function() {
+              $(this).html(data_in.players);
+              $(this).fadeIn(50);
+            });
+          }
+          if (data_in.controls) {
+            $("div.controls").fadeOut(50, function() {
+              $(this).html(data_in.controls);
+              $(this).fadeIn(50);
+              add_action_event_listeners(socket);
+            });
+          }
         } else if (data_in.action == 'quad_state_score') {
           $("li.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
 

@@ -2,7 +2,7 @@ module Role
   class Villager < GenericRole
     
     def initialize
-      @name = "Villager"
+      @name = "村人"
       super
     end
 
