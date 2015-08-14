@@ -6,26 +6,7 @@ $(function() {
     player_list();
   else if(window.location.pathname.match(/round/))
     round();
-  //Match root if nothing else matches
-  else 
-    participation();
 });
-
-function participation() {
-  $("button[type='submit']").click(function(e) {
-    e.preventDefault();
-    var $form = $("form[data-existing=" + $(this).attr("data-existing") + "]");
-
-    if ($form.find("[name=username]").val() && $form.find("[name=round]").val()) {
-      $form.submit();
-    } else {
-      if (!$form.find("[name=username]").val())
-        $form.find("[name=username]").parent().addClass("has-error");
-      if (!$form.find("[name=round]").val())
-        $form.find("[name=round]").parent().addClass("has-error");
-    }
-  });
-}
 
 function round() {
   $("div.info div.panel-body")
