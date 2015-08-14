@@ -111,6 +111,12 @@ class Yawg < Sinatra::Base
     end
   end
 
+  get '/round/exit' do
+    WSController.instance.delete_socket session[:username], session[:game]
+    session.clear
+    login
+  end
+
   helpers do
     def login
       if session[:username] then

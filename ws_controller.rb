@@ -130,6 +130,7 @@ class WSController
       add_to_next_msg key: :phase, value: winner_msg
       queue_erb( :player_list_with_roles, msg_key: :players,
                                           locals: { winners: winners, losers: losers } )
+      queue_erb( :controls_results, msg_key: :controls )
                  
       send_msg_to_player_in_game player: player, game: round
     end
