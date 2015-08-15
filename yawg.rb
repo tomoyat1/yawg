@@ -73,7 +73,12 @@ class Yawg < Sinatra::Base
   end
 
   get '/round' do
-    "shouldn't see this"
+    round = @@rounds[session[:round]]
+    if round.player( session[:username] ).is_host
+      send_staging :info_reconnected, :controls_staging_new
+    else
+      send_staging :info_reconnected, :controls_staging_existing
+    end
   end
 
   get '/round/list' do
