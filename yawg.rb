@@ -23,7 +23,7 @@ class Yawg < Sinatra::Base
   settings.sprockets.append_path 'bower_components'
 
   disable :sessions
-  use Rack::Session::Pool
+  use Rack::Session::Pool, :expire_after => 2592000
 
   @@rounds = Hash.new
 
@@ -74,10 +74,19 @@ class Yawg < Sinatra::Base
 
   get '/round' do
     round = @@rounds[session[:round]]
-    if round.player( session[:username] ).is_host
-      send_staging :info_reconnected, :controls_staging_new
+    if round then
+      if round.player( session[:username] ).is_host
+        send_staging :info_reconnected, :controls_staging_new
+      else
+        send_staging :info_reconnected, :controls_staging_existing
+      end
     else
-      send_staging :info_reconnected, :controls_staging_existing
+      exit_round
+      session.clear
+      '<script>
+         alert("ゲームは終了しています。");
+         window.location = "/";
+      </script>'
     end
   end
 
@@ -99,8 +108,12 @@ class Yawg < Sinatra::Base
           if msg_hash.key?('command') then
             round = @@rounds[session[:round]]
             if msg_hash['command'] == 'start' then
-              role_count = msg_hash['role_count']
-              round.init_round role_count
+              if @@rounds[:round] then
+                role_count = msg_hash['role_count']
+                round.init_round role_count
+              else
+                WSController.instance.send_msg_to_socket ws, "ゲームは削除されました。ゲームから抜けてください。"
+              end
             elsif msg_hash['command'] == 'quad_state_score' then
               extracted_score = { target: msg_hash['target'],
                                   score: msg_hash['score'] }
@@ -125,12 +138,7 @@ class Yawg < Sinatra::Base
   end
 
   get '/round/exit' do
-    round = @@rounds[session[:round]]
-    round.players.delete session[:username]
-    if round.players.empty? then
-      @@rounds.reject!{ |key, value| key == session[:round] }
-      puts "Released round #{session[:round]}"
-    end
+    exit_round
     session.clear
     '<script>window.location = "/"</script>'
   end
@@ -161,6 +169,17 @@ class Yawg < Sinatra::Base
                               :roles => @@rounds[session[:round]].roles }
     end
 
+    def exit_round
+      round = @@rounds[session[:round]]
+      if round then
+        round.players.delete session[:username]
+        if round.players.empty? then
+          @@rounds.delete session[:round]
+          RoundCleaner.instance.release session[:round]
+        end
+      end
+    end
+
     def format_info(raw_string)
       "<div>#{raw_string}</div>"
     end
@@ -171,4 +190,12 @@ class Yawg < Sinatra::Base
 
 # Oops, spoke too soon. Below is NOT temporary.
   run! if app_file == $0
+
+  def self.delete_round(round_name)
+    @@rounds.delete round_name
+  end
+
+  def self.send_msg_to_round(round_name, msg)
+    @@rounds[round_name].message msg
+  end
 end

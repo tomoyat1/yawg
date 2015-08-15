@@ -37,7 +37,7 @@ class WSController
 
   def send_msg_to_player_in_round(msg: @next_msg, player:, round:)
     if @sockets[round.name] && @sockets[round.name].key?(player.name) then
-      @sockets[round.name][player.name].send(msg.to_json)
+      @sockets[round.name][player.name].send msg.to_json
     end
     if msg == @next_msg then
       @next_msg = nil
@@ -71,6 +71,13 @@ class WSController
     elsif args[:force_kill] then
       kill_connections_in_round players, round
     end
+  end
+
+  def send_msg_to_socket(socket, msg)
+    add_to_next_msg key: :action, value: 'in_round'
+    add_to_next_msg key: :info, value: format_info( msg )
+    socket.send @next_msg.to_json
+    @next_msg = nil
   end
 
   private
@@ -174,7 +181,7 @@ class WSController
 
   def kill_connections_in_round(players, round)
     @sockets[round.name].each do |username, socket|
-      socket.close_connection
+      socket.close
       @sockets[round.name].delete username
     end
     @sockets.delete round.name
