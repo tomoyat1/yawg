@@ -32,6 +32,8 @@ class Round
     @inactivity_strikes = 0
 
     GenericRole.desendants.each{|desendant| add_role(desendant.new) }
+
+    RoundCleaner.instance.monitor_round_in_staging @name
   end
 
   def add_player(name)
@@ -67,6 +69,7 @@ class Round
 
   def init_round(role_hash)
     unless @in_progress then
+      RoundCleaner.instance.disable_monitoring name
       @in_progress = true
       add_phase Night.new(1)
 
@@ -127,8 +130,9 @@ class Round
           end_round
         end
       else
-        message "入力が一定時間以上なかったのでゲームを終了します。ブラウザを閉じてください。"
+        message "入力が一定時間以上なかったのでゲームを終了します。トップに戻ります。"
         puts "Killing round #{@name} due to inactivity"
+        message '<script>window.location = "/"</script>'
         release_round force: true
       end
     end
@@ -224,6 +228,7 @@ class Round
     @phases = nil
 
     if args[:force] then
+      RoundCleaner.instance.release self.name
       changed
       notify_observers players: @players, round: self, round_kill: true
     end

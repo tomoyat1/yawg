@@ -17,7 +17,7 @@ module Phase
       owner.message @start_msg
       owner.message "残り#{@clock}分です。"
       #TODO MAKE TIMER PRODUCTION LENGTH
-      @tick = EM.add_periodic_timer(15) do
+      @tick = EM.add_periodic_timer(60) do
         @clock -= 1
         unless @clock <= 0 then
           owner.message "残り#{@clock}分です。"
