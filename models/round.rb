@@ -41,7 +41,6 @@ class Round
       notify_observers players: @players, round: self, players_changed: true
       return true
     else
-      "adding player failed"
       return false
     end
   end
@@ -67,28 +66,32 @@ class Round
   end
 
   def init_round(role_hash)
-    @in_progress = true
-    add_phase Night.new(1)
+    unless @in_progress then
+      @in_progress = true
+      add_phase Night.new(1)
 
-    role_array = Array.new
-    role_hash.each do |key, value|
-      value.times do
-        role_array << key
+      role_array = Array.new
+      role_hash.each do |key, value|
+        value.times do
+          role_array << key
+        end
       end
-    end
-    if role_array.size < @players.size then
-      until role_array.size == @players.size
-        role_array << "Villager" 
+      if role_array.size < @players.size then
+        until role_array.size == @players.size
+          role_array << "Villager" 
+        end
       end
+      role_array.shuffle!
+      @players.values.each_index do |i|
+        @players.values[i].role = @roles[role_array[i]]
+      end
+      
+      changed
+      notify_observers players: @players, round: self, round_start: true
+      current_phase.start_phase
+    else
+      message "すでにゲームは開始されています。"
     end
-    role_array.shuffle!
-    @players.values.each_index do |i|
-      @players.values[i].role = @roles[role_array[i]]
-    end
-    
-    changed
-    notify_observers players: @players, round: self, round_start: true
-    current_phase.start_phase
   end
 
   def next_phase
