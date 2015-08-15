@@ -7,23 +7,24 @@ module Phase
       super
       @clock = 5
       @start_msg = "朝が来ました。処刑する人を相談して決めて、各自投票をしてください。"
-      @timeup_msg = "相談と投票の時間は終了しました"
+      @timeup_msg = "相談と投票の時間は終了しました。"
 
     end
 
     def add_action(player:, targets:)
       result = Hash.new
+      result_str = ''
       if @action_confirmed.index( player.name ) == nil then
         unless targets[0] == nil then
-          @action_queue << targets[1]
-          result.store :msg, '投票を受け付けました。'
+          @action_queue << targets.first
+          result_str = '投票を受け付けました。'
         else
-          result.store :msg, '投票する人を選んでください。'
+          result_str = '投票する人を選んでください。'
         end
       end
       @action_confirmed << player.name
       result.store :player, player
-      result.store :target, target
+      result.store :msg, result_str
       result
     end
 

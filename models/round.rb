@@ -37,7 +37,6 @@ class Round
   def add_player(name)
     unless @players.key?(name) then
       @players.store(name, Player.new(name: name))
-      puts "added #{name} to #{@name}"
       changed
       notify_observers players: @players, round: self, players_changed: true
       return true

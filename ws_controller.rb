@@ -174,7 +174,7 @@ class WSController
 
   def kill_connections_in_round(players, round)
     @sockets[round.name].each do |username, socket|
-      socket.close
+      socket.close_connection
       @sockets[round.name].delete username
     end
     @sockets.delete round.name
