@@ -36,8 +36,9 @@ class Round
       @players.store(name, Player.new(name: name))
       changed
       notify_observers players: @players, round: self, players_changed: true
+      return true
     else
-      raise "Player already in group"
+      return false
     end
   end
 

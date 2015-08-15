@@ -35,7 +35,8 @@ function participation() {
       if (!$form.find("[name=username]").val())
         $form.find("[name=username]").parent().addClass("has-error");
       if (!$form.find("[name=round]").val())
-        $form.find("div.round-list-header").addClass("list-group-item-error");
+        $form.find("div.round-list-header").addClass("list-group-item-danger");
+        $form.find("[name=round]").parent().addClass("has-error");
     }
   });
 
@@ -56,6 +57,7 @@ function participation() {
           $clicked.parent().children("div.round").removeClass("list-group-item-info");
           $clicked.addClass("list-group-item-info");
           $form = $("form[data-existing=true]");
+          console.log($clicked.attr('data-round'));
           $form.find("[name=round]").val($clicked.attr('data-round'));
         });
       }
