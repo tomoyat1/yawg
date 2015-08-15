@@ -3,6 +3,7 @@ module Phase
 
     attr_reader :action_queue
     attr_reader :index
+    attr_reader :shown_name
     attr_accessor :owner
 
     def initialize(index)
@@ -47,7 +48,7 @@ module Phase
       player.role.player_list_f
     end
 
-    def shown_name
+    def class_name
       self.class.name.split('::').last || ''
     end
 

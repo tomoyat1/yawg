@@ -5,6 +5,7 @@ module Phase
 
     def initialize(index)
       super
+      @shown_name = "昼"
       @clock = 5
       @start_msg = "朝が来ました。処刑する人を相談して決めて、各自投票をしてください。"
       @timeup_msg = "相談と投票の時間は終了しました。"

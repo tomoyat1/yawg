@@ -5,6 +5,7 @@ module Phase
 
     def initialize(index)
       super
+      @shown_name = "夜"
       @clock = 2
       @start_msg = "夜が来ました。能力を発動する相手を選んでください。"
       @timeup_msg = "選択時間は終了しました。"
