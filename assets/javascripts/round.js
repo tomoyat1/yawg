@@ -55,6 +55,16 @@ function round() {
               $(this).fadeIn(50);
             });
           }
+          if (data_in.info) {
+            $("div.info div.panel-body > div").append(data_in.info);
+            $("div.info div.panel-body")
+              .scrollTop($("div.info div.panel-body > div").height());
+          }
+          if (data_in.chat) {
+            $("div.chat div.panel-body > div").append(data_in.chat);
+            $("div.chat div.panel-body")
+              .scrollTop($("div.chat div.panel-body > div").height());
+          }
         } else if (data_in.action == 'round_result') {
           if (data_in.phase) {
             $("h1.phase").fadeOut(50, function() {
@@ -76,10 +86,10 @@ function round() {
             });
           }
         } else if (data_in.action == 'quad_state_score') {
-          $("li.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
+          $("a.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
 
           var s_hash = data_in.specifics
-          var s_list = $("li.quad-state[data-target='" + data_in.player + "']").find("ul");
+          var s_list = $("a.quad-state[data-target='" + data_in.player + "']").find("ul");
           s_list.empty();
           for (var index in s_hash) {
             if (s_hash.hasOwnProperty(index) && s_hash[index] != 0) {
@@ -117,12 +127,12 @@ function add_action_event_listeners(socket) {
     }
     data_out.targets = new Array;
 
-    $("li.single-select").each(function(index, element) {
+    $("a.single-select").each(function(index, element) {
       if ($(element).attr("data-selected") == "true")
         data_out.targets.push($(element).attr("data-target"));
     });
 
-    $("li.quad-state").each(function(index, element) {
+    $("a.quad-state").each(function(index, element) {
       target = $(element).attr('data-target');
       score = parseInt($(element).attr('data-score'));
       for (i = 0; i < score; i++)
@@ -133,13 +143,17 @@ function add_action_event_listeners(socket) {
       data_out.targets.push('');
 
     socket.send("" + JSON.stringify(data_out));
+    $("a.single-select").off('click');
+    $("a.quad-state").off('click');
   });
+
   $("button.extend").click(function() {
     var data_out = {
       command: "extend"
     };
     socket.send("" + JSON.stringify(data_out));
   });
+
   $("button.skip").click(function() {
     var data_out = {
       command: "skip"
@@ -149,14 +163,14 @@ function add_action_event_listeners(socket) {
 }
 
 function add_player_event_listeners(socket) {
-  $("li.single-select").click(function() {
-    $(this).parent().children("li").removeClass("list-group-item-info");
-    $(this).parent().children("li").attr("data-selected", "false")
+  $("a.single-select").click(function() {
+    $(this).parent().children("a").removeClass("list-group-item-info");
+    $(this).parent().children("a").attr("data-selected", "false")
     $(this).addClass("list-group-item-info");
     $(this).attr("data-selected", "true")
   });
 
-  $("li.quad-state").click(function() {
+  $("a.quad-state").click(function() {
     var clicked = $(this);
     target = clicked.attr('data-target');
     score = parseInt(clicked.attr('data-score'));
@@ -192,7 +206,7 @@ function add_player_event_listeners(socket) {
     socket.send("" + JSON.stringify(data_out));
   });
 
-  $("li.quad-state > span.badge").click(function(e) {
+  $("a.quad-state > span.badge").click(function(e) {
     e.stopPropagation();
     $(this).parent().children(".specifics").collapse('toggle');
   });

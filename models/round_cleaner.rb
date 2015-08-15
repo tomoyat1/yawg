@@ -32,8 +32,6 @@ class RoundCleaner
   end
 
   def disable_monitoring(round_name)
-    @watcher.exit
     @time_left.delete round_name
-    @watcher.wakeup
   end
 end

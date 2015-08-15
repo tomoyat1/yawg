@@ -108,7 +108,7 @@ class Yawg < Sinatra::Base
           if msg_hash.key?('command') then
             round = @@rounds[session[:round]]
             if msg_hash['command'] == 'start' then
-              if @@rounds[:round] then
+              if @@rounds[session[:round]] then
                 role_count = msg_hash['role_count']
                 round.init_round role_count
               else

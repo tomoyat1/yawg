@@ -10,17 +10,17 @@ function participation() {
     url: "/round/list",
     success: function(data) {
       $("div.rounds").html(data);
-      $("div.round").click(function() {
+      $("a.round").click(function() {
         var $clicked = $(this)
-        $clicked.parent().children("div.round").removeClass("list-group-item-info");
+        $clicked.parent().children("a.round").removeClass("list-group-item-info");
         $clicked.addClass("list-group-item-info");
         $form = $("form[data-existing=true]");
         $form.find("[name=round]").val($clicked.attr('data-round'));
       });
     }
   });
-  $("div.round").click(function() {
-    $(this).parent().children("div.round").removeClass("list-group-item-info");
+  $("a.round").click(function() {
+    $(this).parent().children("a.round").removeClass("list-group-item-info");
     $(this).addClass("list-group-item-info");
     $form = $("form[data-existing=true]");
     $form.find("[name=round]").val($(this).text());
@@ -45,16 +45,16 @@ function participation() {
       url: "/round/list",
       success: function(data) {
         var selected = ''
-        $("div.round").each(function(index, element) {
+        $("a.round").each(function(index, element) {
           if ($(element).hasClass("list-group-item-info"))
               selected = $(element).attr('data-round');
         });
         $("div.rounds").html(data);
         if (selected != '')
-          $("div.round[data-round=" + selected + "]").addClass("list-group-item-info");
-        $("div.round").click(function() {
+          $("a.round[data-round=" + selected + "]").addClass("list-group-item-info");
+        $("a.round").click(function() {
           var $clicked = $(this)
-          $clicked.parent().children("div.round").removeClass("list-group-item-info");
+          $clicked.parent().children("a.round").removeClass("list-group-item-info");
           $clicked.addClass("list-group-item-info");
           $form = $("form[data-existing=true]");
           $form.find("[name=round]").val($clicked.attr('data-round'));

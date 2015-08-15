@@ -2,7 +2,7 @@
   ゲームを選択してください
 </div>
 <% rounds.each do |round| %>
-  <div class="list-group-item round" data-round="<%= round %>">
+  <a href="#" class="list-group-item round" data-round="<%= round %>">
     <%= round %>
-  </div>
+  </a>
 <% end %>

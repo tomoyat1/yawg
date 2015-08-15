@@ -2,15 +2,15 @@
   <div class="panel-heading">
     Players
   </div>
-  <ul class="list-group">
+  <div class="list-group">
     <% players.each_key do |key| %>
-      <li class="list-group-item quad-state" data-target="<%= key %>" data-score="0">
+      <a href="#" class="list-group-item quad-state" data-target="<%= key %>" data-score="0">
       <%= key %><span class="badge" data-toggle="collapse" data-target="<%= key %>">0</span>
         <div class="specifics collapse" id="<%= key %>">
           <ul>
           </ul>
         </div>
-      </li>
+      </a>
     <% end %>
-  </ul>
+  </div>
 </div>
