@@ -34,12 +34,14 @@ class Yawg < Sinatra::Base
   post '/round' do
     session.delete :p_conflict
     session.delete :r_conflict
+    session.delete :no_round
     if params[:existing] == 'true' then
       if @@rounds[params[:round]] then
         if @@rounds[params[:round]].add_player(params[:username]) then
           set_session
           send_staging :info_existing, :controls_staging_existing
         else
+          "adding player to round failed"
           if session[:username] then
             '<script>window.location = "/"</script>'
           else
@@ -47,6 +49,9 @@ class Yawg < Sinatra::Base
             '<script>window.location = "/"</script>'
           end
         end
+      else
+        session[:no_round] = true
+        '<script>window.location = "/"</script>'
       end
     elsif params[:existing] == 'false' then
       unless @@rounds[params[:round]] then
@@ -54,6 +59,7 @@ class Yawg < Sinatra::Base
         @@rounds[params[:round]].add_observer(WSController.instance)
         @@rounds[params[:round]].add_player(params[:username])
         set_session
+        session[:is_host] = true
         send_staging :info_new, :controls_staging_new
       else
         if session[:username] then
@@ -67,10 +73,12 @@ class Yawg < Sinatra::Base
   end
 
   get '/round' do
+    "shouldn't see this"
   end
 
   get '/round/list' do
-    erb :round_list, :layout => false, :locals => { :rounds => @@rounds.keys }
+    joinable_rounds = @@rounds.reject {|key, value| value.in_progress }
+    erb :round_list, :layout => false, :locals => { :rounds => joinable_rounds.keys }
   end
 
   get '/round/status' do
@@ -108,8 +116,12 @@ class Yawg < Sinatra::Base
   end
 
   get '/round/exit' do
-    @@rounds.reject!{ |key, value| key == session[:round] }
-    puts "Released round #{session[:round]}"
+    round = @@rounds[session[:round]]
+    round.players.delete session[:username]
+    if round.players.empty? then
+      @@rounds.reject!{ |key, value| key == session[:round] }
+      puts "Released round #{session[:round]}"
+    end
     session.clear
     '<script>window.location = "/"</script>'
   end
@@ -121,7 +133,8 @@ class Yawg < Sinatra::Base
       else
         erb :index, :locals => { :location => 'Top',
                                  :p_conflict => session[:p_conflict],
-                                 :r_conflict => session[:r_conflict] }
+                                 :r_conflict => session[:r_conflict],
+                                 :no_round => session[:no_round] }
       end
     end
     

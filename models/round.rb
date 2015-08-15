@@ -20,8 +20,10 @@ class Round
   attr_reader :name
   attr_reader :phases
   attr_reader :roles
+  attr_reader :in_progress
 
   def initialize(name:)
+    @in_progress = false
     @name = name
     @players = Hash.new
     @phases = Array.new
@@ -34,10 +36,12 @@ class Round
   def add_player(name)
     unless @players.key?(name) then
       @players.store(name, Player.new(name: name))
+      puts "added #{name} to #{@name}"
       changed
       notify_observers players: @players, round: self, players_changed: true
       return true
     else
+      "adding player failed"
       return false
     end
   end
@@ -63,6 +67,7 @@ class Round
   end
 
   def init_round(role_hash)
+    @in_progress = true
     add_phase Night.new(1)
 
     role_array = Array.new
@@ -87,31 +92,36 @@ class Round
   end
 
   def next_phase
-    current_phase.end_phase
-    execute_survey
-    if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
-      @roles['Werewolf'].reset_state
-      #@roles['Knight'].reset_state
-      if current_phase.class == Night then
-        add_phase Day.new( current_phase.index )
-      else
-        add_phase Night.new( current_phase.index + 1 )
-      end
-
-      current_phase.start_phase
-      alive = @players.select {|key, value| value.is_alive }
-      changed
-      notify_observers players: alive, round: self, next_phase: true
-
-      dead = @players.select {|key, value| !value.is_alive }
-      changed
-      notify_observers players: dead, round: self, spirit_world: true
-
-      @round_survey.each_value do |value|
-        value = 0
-      end
+    if @players.empty? then
+      puts "Killing round due to inactivity"
+      release_round
     else
-      end_round
+      current_phase.end_phase
+      execute_survey
+      if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
+        @roles['Werewolf'].reset_state
+        #@roles['Knight'].reset_state
+        if current_phase.class == Night then
+          add_phase Day.new( current_phase.index )
+        else
+          add_phase Night.new( current_phase.index + 1 )
+        end
+
+        current_phase.start_phase
+        alive = @players.select {|key, value| value.is_alive }
+        changed
+        notify_observers players: alive, round: self, next_phase: true
+
+        dead = @players.select {|key, value| !value.is_alive }
+        changed
+        notify_observers players: dead, round: self, spirit_world: true
+
+        @round_survey.each_value do |value|
+          value = 0
+        end
+      else
+        end_round
+      end
     end
   end
   
@@ -192,9 +202,11 @@ class Round
     @roles = nil
 
     @players.each_value do |player|
-      player.release_role
+      if player then
+        player.release_role
+      end
     end
-    @players = nil
+    #Players will be released upon disconnection
 
     @phases.each do |phase|
       phase.release_owner

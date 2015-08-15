@@ -4,13 +4,19 @@
 <% if p_conflict %>
   <div class="alert alert-warning alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <%= p_conflict %>は既にゲーム内にいます
+    <%= p_conflict %>は既にゲーム内にいます。
   </div>
 <% end %>
 <% if r_conflict %>
   <div class="alert alert-warning alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <%= r_conflict %>は既に存在します
+    <%= r_conflict %>は既に存在します。
+  </div>
+<% end %>
+<% if no_round %>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    そのゲームは存在しません。もう一度選び直してください。
   </div>
 <% end %>
 <div class="main">

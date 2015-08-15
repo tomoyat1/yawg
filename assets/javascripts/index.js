@@ -15,7 +15,7 @@ function participation() {
         $clicked.parent().children("div.round").removeClass("list-group-item-info");
         $clicked.addClass("list-group-item-info");
         $form = $("form[data-existing=true]");
-        $form.find("[name=round]").val($clicked.text());
+        $form.find("[name=round]").val($clicked.attr('data-round'));
       });
     }
   });
@@ -57,7 +57,6 @@ function participation() {
           $clicked.parent().children("div.round").removeClass("list-group-item-info");
           $clicked.addClass("list-group-item-info");
           $form = $("form[data-existing=true]");
-          console.log($clicked.attr('data-round'));
           $form.find("[name=round]").val($clicked.attr('data-round'));
         });
       }
