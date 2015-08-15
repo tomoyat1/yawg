@@ -58,8 +58,8 @@ class Yawg < Sinatra::Base
         @@rounds.store( params[:round], Round.new( name: params[:round] ) )
         @@rounds[params[:round]].add_observer(WSController.instance)
         @@rounds[params[:round]].add_player(params[:username])
+        @@rounds[params[:round]].player(params[:username]).is_host = true
         set_session
-        session[:is_host] = true
         send_staging :info_new, :controls_staging_new
       else
         if session[:username] then
@@ -104,6 +104,10 @@ class Yawg < Sinatra::Base
             elsif msg_hash['command'] == 'confirm_action' then
               round.add_action_to_phase_queue player_name: session[:username],
                                               target_names: msg_hash['targets']
+            elsif msg_hash['command'] == 'extend' then
+              round.current_phase.extend_phase 1
+            elsif msg_hash['command'] == 'skip' then
+              round.current_phase.skip_remaining_time
             end
           end
         end

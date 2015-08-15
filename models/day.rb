@@ -3,6 +3,14 @@ require_relative 'generic_phase'
 module Phase
   class Day < GenericPhase
 
+    def initialize(index)
+      super
+      @clock = 5
+      @start_msg = "朝が来ました。処刑する人を相談して決めて、各自投票をしてください。"
+      @timeup_msg = "相談と投票の時間は終了しました"
+
+    end
+
     def add_action(player:, targets:)
       result = Hash.new
       if @action_confirmed.index( player.name ) == nil then

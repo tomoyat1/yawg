@@ -3,6 +3,13 @@ require_relative 'generic_phase'
 module Phase
   class Night < GenericPhase
 
+    def initialize(index)
+      super
+      @clock = 2
+      @start_msg = "夜が来ました。能力を発動する相手を選んでください。"
+      @timeup_msg = "選択時間は終了しました。"
+    end
+
     def add_action(player:, targets:)
       result = Hash.new
       result_str = ''

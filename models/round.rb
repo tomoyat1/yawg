@@ -29,6 +29,7 @@ class Round
     @phases = Array.new
     @roles = Hash.new
     @round_survey = Hash.new
+    @inactivity_strikes = 0
 
     GenericRole.desendants.each{|desendant| add_role(desendant.new) }
   end
@@ -93,34 +94,40 @@ class Round
 
   def next_phase
     if @players.empty? then
-      puts "Killing round due to inactivity"
-      release_round
+      puts "Killing round #{@name} due to inactivity"
+      release_round force: true
     else
       current_phase.end_phase
-      execute_survey
-      if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
-        @roles['Werewolf'].reset_state
-        #@roles['Knight'].reset_state
-        if current_phase.class == Night then
-          add_phase Day.new( current_phase.index )
+      unless @inactivity_strikes >= 3 then
+        execute_survey
+        if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
+          @roles['Werewolf'].reset_state
+          #@roles['Knight'].reset_state
+          if current_phase.class == Night then
+            add_phase Day.new( current_phase.index )
+          else
+            add_phase Night.new( current_phase.index + 1 )
+          end
+
+          current_phase.start_phase
+          alive = @players.select {|key, value| value.is_alive }
+          changed
+          notify_observers players: alive, round: self, next_phase: true
+
+          dead = @players.select {|key, value| !value.is_alive }
+          changed
+          notify_observers players: dead, round: self, spirit_world: true
+
+          @round_survey.each_value do |value|
+            value = 0
+          end
         else
-          add_phase Night.new( current_phase.index + 1 )
-        end
-
-        current_phase.start_phase
-        alive = @players.select {|key, value| value.is_alive }
-        changed
-        notify_observers players: alive, round: self, next_phase: true
-
-        dead = @players.select {|key, value| !value.is_alive }
-        changed
-        notify_observers players: dead, round: self, spirit_world: true
-
-        @round_survey.each_value do |value|
-          value = 0
+          end_round
         end
       else
-        end_round
+        message "入力が一定時間以上なかったのでゲームを終了します。ブラウザを閉じてください。"
+        puts "Killing round #{@name} due to inactivity"
+        release_round force: true
       end
     end
   end
@@ -195,7 +202,8 @@ class Round
                      msg: msg
   end
 
-  def release_round
+  def release_round **args
+    current_phase.kill_tick
     @roles.each_value do |role|
       role.release_owner
     end
@@ -212,5 +220,14 @@ class Round
       phase.release_owner
     end
     @phases = nil
+
+    if args[:force] then
+      changed
+      notify_observers players: @players, round: self, round_kill: true
+    end
+  end
+
+  def inactivity_strike
+    @inactivity_strikes += 1
   end
 end

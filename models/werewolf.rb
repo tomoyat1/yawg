@@ -13,6 +13,7 @@ module Role
       @divine_result = "人狼"
       @is_count_evil = true
       @is_side_evil = true
+      @inactivity_strikes = 0
     end
 
     def indirect_confirm_string
@@ -39,6 +40,7 @@ module Role
         owner.message "#{killed_name}は殺されました。"
       else
         owner.message "人狼達は誰を殺すか合意できなかったようです..."
+        owner.inactivity_strike
       end
     end
 

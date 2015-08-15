@@ -68,6 +68,8 @@ class WSController
       send_action_result players, round, args[:result]
     elsif args[:timer_message] then
       send_message players, round, args[:msg]
+    elsif args[:force_kill] then
+      kill_connections_in_round players, round
     end
   end
 
@@ -89,7 +91,7 @@ class WSController
       
       role_msg = format_info "あなたの役職は#{player.role.name}です。"
       add_to_next_msg( key: :info, value: role_msg )
-      queue_erb( :controls_round, msg_key: :controls, 
+      queue_erb( player.controls_f, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )
 
       player_list = round.current_phase.get_player_list player
@@ -111,7 +113,7 @@ class WSController
       pl_without_self = players.reject {|key, value| value == player }
       queue_erb( player_list, msg_key: :players,
                           locals: { players: pl_without_self } )
-      queue_erb( :controls_round, msg_key: :controls, 
+      queue_erb( player.controls_f, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )
       send_msg_to_player_in_round player: player, round: round
     end
@@ -168,6 +170,14 @@ class WSController
       add_to_next_msg key: :info, value: format_info( msg )
       send_msg_to_player_in_round player: player, round: round
     end
+  end
+
+  def kill_connections_in_round(players, round)
+    @sockets[round.name].each do |username, socket|
+      socket.close
+      @sockets[round.name].delete username
+    end
+    @sockets.delete round.name
   end
 
   def format_info(raw_string)
