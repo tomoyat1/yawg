@@ -13,17 +13,30 @@ module Phase
     end
 
     def start_phase
+      owner.message @start_msg
       owner.message "残り#{@clock}分です。"
-      tick = EM.add_periodic_timer(15) do
+      #TODO MAKE TIMER PRODUCTION LENGTH
+      @tick = EM.add_periodic_timer(15) do
         @clock -= 1
         unless @clock <= 0 then
           owner.message "残り#{@clock}分です。"
         else
-          owner.message "行動時間は終了しました。"
+          owner.message @timeup_msg
           owner.next_phase
-          tick.cancel
+          @tick.cancel
         end
       end
+    end
+
+    def extend_phase(minutes)
+      @clock += minutes
+      owner.message "時間を#{minutes}分延長しました"
+    end
+
+    def skip_remaining_time
+      owner.message @timeup_msg
+      owner.next_phase
+      @tick.cancel
     end
 
     def end_phase
@@ -58,6 +71,12 @@ module Phase
 
     def release_owner
       @owner = nil
+    end
+
+    def kill_tick
+      if @tick.respond_to?( :cancel ) then
+        @tick.cancel
+      end
     end
 
   end

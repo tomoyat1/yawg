@@ -3,11 +3,13 @@ class Player
   attr_reader :name
   attr_reader :role
   attr_reader :is_alive
-  attr_reader :player_list_f
+  #attr_reader :player_list_f
+  attr_accessor :is_host
 
   def initialize(args)
     @name = args[:name]
     @is_alive = true
+    @is_host = false
   end
 
   def die
@@ -29,5 +31,13 @@ class Player
 
   def release_role
     @role = nil
+  end
+
+  def controls_f
+    if @is_host then
+      :controls_round_host
+    else
+      :controls_round
+    end
   end
 end

@@ -134,6 +134,18 @@ function add_action_event_listeners(socket) {
 
     socket.send("" + JSON.stringify(data_out));
   });
+  $("button.extend").click(function() {
+    var data_out = {
+      command: "extend"
+    };
+    socket.send("" + JSON.stringify(data_out));
+  });
+  $("button.skip").click(function() {
+    var data_out = {
+      command: "skip"
+    };
+    socket.send("" + JSON.stringify(data_out));
+  });
 }
 
 function add_player_event_listeners(socket) {
