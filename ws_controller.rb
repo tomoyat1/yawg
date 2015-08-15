@@ -87,7 +87,7 @@ class WSController
       add_to_next_msg( key: :action, value: 'in_round' )
       add_to_next_msg( key: :phase, value: round.phases.last.shown_name )
       
-      role_msg = format_info "Your role is #{player.role.name}"
+      role_msg = format_info "あなたの役職は#{player.role.name}です。"
       add_to_next_msg( key: :info, value: role_msg )
       queue_erb( :controls_round, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )

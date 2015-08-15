@@ -1,60 +1,82 @@
-<h1>YAWG - Yet Another Werewolf Game</h1>
-<div class="col-sm-6">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">新しいゲームを作成する</h3>
-    </div>
-    <div class="list-group">
-      <form method="post" action="/round" class="form-horizontal" data-existing="false">
-        <div class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">Username</span>
-            <input type="text" name="username" class="form-control" placeholder="ユーザー名">
+<div class="page-header">
+  <h1>YAWG<small> Yet Another Werewolf Game</small></h1>
+</div>
+<% if p_conflict %>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <%= p_conflict %>は既にゲーム内にいます。
+  </div>
+<% end %>
+<% if r_conflict %>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <%= r_conflict %>は既に存在します。
+  </div>
+<% end %>
+<% if no_round %>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    そのゲームは存在しません。もう一度選び直してください。
+  </div>
+<% end %>
+<div class="main">
+  <div class="col-sm-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">新しいゲームを作成する</h3>
+      </div>
+      <div class="list-group">
+        <form method="post" action="/round" class="form-horizontal" data-existing="false">
+          <div class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">Username</span>
+              <input type="text" name="username" class="form-control" placeholder="ユーザー名">
+            </div>
           </div>
-        </div>
-        <div class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">Round</span>
-            <input type="text" name="round" class="form-control" placeholder="ゲーム名">
+          <div class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">Round</span>
+              <input type="text" name="round" class="form-control" placeholder="ゲーム名">
+            </div>
           </div>
-        </div>
-        <div class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">Passcode</span>
-            <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(任意)" max="9999" min="0000">
+          <div class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">Passcode</span>
+              <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(任意)" max="9999" min="0000">
+            </div>
           </div>
-        </div>
-        <input type="hidden" name="existing" value="false">
-        <button type="submit" class="list-group-item" data-existing="false">Enter</button>
-      </form>
+          <input type="hidden" name="existing" value="false">
+          <button type="submit" class="list-group-item" data-existing="false">Enter</button>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-<div class="col-sm-6">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">既存のゲームに参加</h3>
-    </div>
-    <div class="list-group">
-      <form method="post" action="/round" class="form-horizontal" data-existing="true">
-        <div class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">Username</span>
-            <input type="text" name="username" class="form-control" placeholder="Username">
+  <div class="col-sm-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">既存のゲームに参加</h3>
+      </div>
+      <div class="list-group">
+        <form method="post" action="/round" class="form-horizontal" data-existing="true">
+          <div class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">Username</span>
+              <input type="text" name="username" class="form-control" placeholder="Username">
+            </div>
           </div>
-        </div>
-        <div class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">Passcode</span>
-            <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(もし設定されていれば)" max="9999" min="0000">
+          <div class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">Passcode</span>
+              <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(もし設定されていれば)" max="9999" min="0000">
+            </div>
           </div>
-        </div>
-        <div class="rounds">
-        </div>
-        <input type="hidden" name="round" value="">
-        <input type="hidden" name="existing" value="true">
-        <button type="submit" class="list-group-item" data-existing="true">Enter</button>
-      </form>
+          <div class="rounds">
+          </div>
+          <input type="hidden" name="round" value="">
+          <input type="hidden" name="existing" value="true">
+          <button type="submit" class="list-group-item" data-existing="true">Enter</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
