@@ -49,11 +49,13 @@ module Phase
     end
 
     def realtime_action_handler(player:, data:)
-      if player.role == owner.roles['Werewolf'] then
-        target = owner.roles['Werewolf'].update_hitlist( player_name: player.name,
-                                                   target_name: data[:target],
-                                                   score: data[:score] )
-        target
+      if @action_confirmed.index( player.name ) == nil then
+        if player.role == owner.roles['Werewolf'] then
+          target = owner.roles['Werewolf'].update_hitlist( player_name: player.name,
+                                                     target_name: data[:target],
+                                                     score: data[:score] )
+          target
+        end
       end
     end
   end

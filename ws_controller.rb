@@ -96,7 +96,7 @@ class WSController
       add_to_next_msg( key: :action, value: 'in_round' )
       add_to_next_msg( key: :phase, value: round.phases.last.shown_name )
       
-      role_msg = format_info "あなたの役職は#{player.role.name}です。"
+      role_msg = format_info player.role.role_msg
       add_to_next_msg( key: :info, value: role_msg )
       queue_erb( player.controls_f, msg_key: :controls, 
                           locals: { action_name: round.action_name_of_player(player) } )
@@ -129,7 +129,8 @@ class WSController
   def send_spirit_world(players, round)
     players.each_value do |player|
       add_to_next_msg key: :action, value: 'spirit'
-      add_to_next_msg key: :phase, value: 'Spirit World'
+      add_to_next_msg key: :phase, value: '霊界'
+      add_to_next_msg key: :info, value: 'あなたは殺されました。以後霊界からゲームを傍観してください。'
       queue_erb( :player_list, msg_key: :players,
                               locals: { players: round.players } )
       send_msg_to_player_in_round player: player, round: round

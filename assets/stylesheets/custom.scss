@@ -10,7 +10,7 @@
 div.info {
   div.panel-body {
     height: 6em;
-    padding: 1em;
+    padding: 0 1em;
     overflow-y: hidden;
 
     > div {
@@ -25,8 +25,12 @@ button.list-group-item {
   }
 }
 
-li.quad-state {
+a.quad-state {
   @include noselect;
+
+  &:focus {
+    outline: none !important;
+  }
 
   > span.badge:hover {
     cursor: pointer;
@@ -39,6 +43,10 @@ li.quad-state {
   }
 }
 
-li.single-select {
+a.single-select {
   @include noselect;
+
+  &:focus {
+    outline: none !important;
+  }
 }

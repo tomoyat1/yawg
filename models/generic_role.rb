@@ -40,6 +40,10 @@ module Role
       @player_list_f
     end
 
+    def role_msg
+      role_msg = "あなたの役職は#{@name}です。"
+    end
+
     def night_action_direct?
       @night_action_direct
     end
