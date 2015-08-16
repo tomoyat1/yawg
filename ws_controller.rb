@@ -60,6 +60,8 @@ class WSController
       send_phase players, round
     elsif args[:spirit_world] then
       send_spirit_world players, round
+    elsif args[:revote] then
+      send_revote players, round, args[:candidates]
     elsif args[:round_over] then
       send_round_result players, round, args[:winner_msg], args[:winners], args[:losers]
     elsif args[:werewolf_realtime] then
@@ -133,6 +135,24 @@ class WSController
       add_to_next_msg key: :info, value: 'あなたは殺されました。以後霊界からゲームを傍観してください。'
       queue_erb( :player_list, msg_key: :players,
                               locals: { players: round.players } )
+      send_msg_to_player_in_round player: player, round: round
+    end
+  end
+
+  def send_revote(players, round, candidates)
+    players.each_value do |player|
+      add_to_next_msg key: :action, value: 'in_round'
+      unless candidates.key?( player.name ) then
+        queue_erb( :player_list_with_selections, msg_key: :players,
+                            locals: { players: candidates } )
+        queue_erb( player.controls_f, msg_key: :controls, 
+                            locals: { action_name: round.action_name_of_player(player) } )
+      else
+        queue_erb( :player_list, msg_key: :players,
+                            locals: { players: candidates } )
+        queue_erb( player.controls_f, msg_key: :controls, 
+                            locals: { action_name: nil } )
+      end
       send_msg_to_player_in_round player: player, round: round
     end
   end

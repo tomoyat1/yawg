@@ -50,13 +50,24 @@ module Phase
         owner.player( hit_list.first ).die
         killed = hit_list.first
         owner.message "#{killed}が吊られました。"
+        return :proceed
+      elsif hit_list.length == 0 then
+        owner.message "投票は一つもなかったようです..."
+        owner.inactivity_strike
+        return :proceed
       else
-        hit_list.each do |target|
-          owner.player( target ).die
-          owner.message "#{target}は吊られました"
-        end
-        owner.message '複数人が吊られました'
+        return hit_list
       end
+    end
+
+    #Abstract as "retry phase"
+    def revote(revote_players, trys)
+      owner.inactivity_strike
+      owner.message '同じ票数の人がいたので決選投票を行います。'
+      owner.message "#{trys}回以内に処刑する人を決めてください。"
+      @action_queue = Array.new
+      @action_confirmed = Array.new
+      phase_timer
     end
 
     def get_player_list(player)
@@ -66,5 +77,6 @@ module Phase
     def current_action_name_of_player(player)
       player.role.day_action_name
     end
+
   end
 end

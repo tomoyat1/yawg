@@ -102,38 +102,51 @@ class Round
       puts "Killing round #{@name} due to inactivity"
       release_round force: true
     else
-      current_phase.end_phase
-      unless @inactivity_strikes >= 3 then
-        execute_survey
-        if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
-          @roles['Werewolf'].reset_state
-          #@roles['Knight'].reset_state
-          if current_phase.class == Night then
-            add_phase Day.new( current_phase.index )
+      end_phase_result = current_phase.end_phase
+      if end_phase_result == :proceed then
+        unless @inactivity_strikes >= 3 then
+          execute_survey
+          if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
+            @roles['Werewolf'].reset_state
+            #@roles['Knight'].reset_state
+            if current_phase.class == Night then
+              add_phase Day.new( current_phase.index )
+            else
+              add_phase Night.new( current_phase.index + 1 )
+            end
+
+            current_phase.start_phase
+            alive = @players.select {|key, value| value.is_alive }
+            changed
+            notify_observers players: alive, round: self, next_phase: true
+
+            dead = @players.select {|key, value| !value.is_alive }
+            changed
+            notify_observers players: dead, round: self, spirit_world: true
+
+            @round_survey.each_value do |value|
+              value = 0
+            end
           else
-            add_phase Night.new( current_phase.index + 1 )
-          end
-
-          current_phase.start_phase
-          alive = @players.select {|key, value| value.is_alive }
-          changed
-          notify_observers players: alive, round: self, next_phase: true
-
-          dead = @players.select {|key, value| !value.is_alive }
-          changed
-          notify_observers players: dead, round: self, spirit_world: true
-
-          @round_survey.each_value do |value|
-            value = 0
+            end_round
           end
         else
-          end_round
+          message "一定時間以上ゲームに進展がなかったので終了します。トップに戻ります。"
+          puts "Killing round #{@name} due to inactivity"
+          message '<script>window.location = "/"</script>'
+          release_round force: true
         end
       else
-        message "入力が一定時間以上なかったのでゲームを終了します。トップに戻ります。"
-        puts "Killing round #{@name} due to inactivity"
-        message '<script>window.location = "/"</script>'
-        release_round force: true
+        revote_players= Hash.new
+        end_phase_result.each do |player_name|
+          revote_players.store( player_name, player( player_name ) )
+        end
+        current_phase.revote revote_players, (4 - @inactivity_strikes)
+        alive = @players.select {|key, value| value.is_alive }
+        changed
+        notify_observers players: alive, round: self,
+                                         revote: true,
+                                         candidates: revote_players
       end
     end
   end
