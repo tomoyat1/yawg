@@ -61,5 +61,5 @@ function participation() {
         });
       }
     });
-  }, 5000);
+  }, 15000);
 }
