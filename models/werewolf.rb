@@ -16,6 +16,15 @@ module Role
       @inactivity_strikes = 0
     end
 
+    def role_msg
+      role_msg = "あなたの役職は#{@name}です。"
+      role_msg << "今回は次の人たちが人狼です: "
+      @players.each do |player_name|
+        role_msg << "#{player_name} "
+      end
+      role_msg
+    end
+
     def indirect_confirm_string
       '殺害対象に関する意見を受け付けました'
     end
