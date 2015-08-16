@@ -222,9 +222,6 @@ class Round
   end
 
   def release_round **args
-    @phases.each do |phase|
-      phase.kill_tick
-    end
     @roles.each_value do |role|
       role.release_owner
     end
