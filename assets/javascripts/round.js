@@ -65,6 +65,7 @@ function round() {
             $("div.chat div.panel-body")
               .scrollTop($("div.chat div.panel-body > div").height());
           }
+        } else if (data_in.action == 'revote') {
         } else if (data_in.action == 'round_result') {
           if (data_in.phase) {
             $("h1.phase").fadeOut(50, function() {

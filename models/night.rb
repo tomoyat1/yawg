@@ -42,6 +42,7 @@ module Phase
       role_hash = owner.roles
       #role_hash['Knight'].execute_actions
       role_hash['Werewolf'].execute_actions
+      return :proceed
     end
 
     def current_action_name_of_player(player)
