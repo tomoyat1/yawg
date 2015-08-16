@@ -196,6 +196,9 @@ class Yawg < Sinatra::Base
   end
 
   def self.send_msg_to_round(round_name, msg)
-    @@rounds[round_name].message msg
+    round = @@rounds[round_name]
+    if round.class == Round then
+      round.message msg
+    end
   end
 end

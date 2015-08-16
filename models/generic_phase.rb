@@ -29,8 +29,8 @@ module Phase
           owner.message "残り#{@clock}分です。"
         else
           owner.message @timeup_msg
-          owner.next_phase
           @tick.cancel
+          owner.next_phase
         end
       end
     end
@@ -42,8 +42,8 @@ module Phase
 
     def skip_remaining_time
       owner.message @timeup_msg
-      owner.next_phase
       @tick.cancel
+      owner.next_phase
     end
 
     def end_phase
@@ -78,12 +78,6 @@ module Phase
 
     def release_owner
       @owner = nil
-    end
-
-    def kill_tick
-      if @tick.respond_to?( :cancel ) then
-        @tick.cancel
-      end
     end
 
   end
