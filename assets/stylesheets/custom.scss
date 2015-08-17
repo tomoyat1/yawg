@@ -7,6 +7,14 @@
       user-select: none;
 }
 
+div.page-header {
+  > h1 {
+    @media screen and (max-width: 480px) {
+      font-size: 18pt;
+    }
+  }
+}
+
 div.info {
   div.panel-body {
     height: 10em;
