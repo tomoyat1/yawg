@@ -62,6 +62,8 @@ module Role
         if kill_queue.last.die then
           killed_name = kill_queue.last.name
           owner.message "#{killed_name}は殺されました。"
+        else
+          owner.message '誰も殺されませんでした'
         end
       else
         owner.message "人狼達は誰を殺すか合意できなかったようです..."
