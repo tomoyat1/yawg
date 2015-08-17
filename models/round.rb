@@ -22,7 +22,7 @@ class Round
   attr_reader :roles
   attr_reader :in_progress
 
-  def initialize(name:)
+  def initialize(name:, passcode:)
     @in_progress = false
     @name = name
     @players = Hash.new
@@ -31,16 +31,34 @@ class Round
     @round_survey = Hash.new
     @inactivity_strikes = 0
 
+    if passcode == '' then
+      @passcode = nil
+    else
+      @passcode = passcode
+    end
+
     GenericRole.desendants.each{|desendant| add_role(desendant.new) }
 
     RoundCleaner.instance.monitor_round_in_staging @name
   end
 
-  def add_player(name)
-    unless @players.key?(name) then
+  def add_player(name, passcode)
+    if !@players.key?(name) && check_passcode( passcode ) then
       @players.store(name, Player.new(name: name))
       changed
       notify_observers players: @players, round: self, players_changed: true
+      return :success
+    elsif @players.key?(name) then
+      return :conflict
+    else
+      return :wrong_passcode
+    end
+  end
+
+  def check_passcode(passcode)
+    if @passcode == nil then
+      return true
+    elsif passcode == @passcode then
       return true
     else
       return false
