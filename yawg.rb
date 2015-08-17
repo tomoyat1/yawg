@@ -9,8 +9,6 @@ require_relative 'ws_controller'
 
 class Yawg < Sinatra::Base
 
-  set :environment, :development
-
   configure :development do
     register Sinatra::Reloader
   end
@@ -35,40 +33,44 @@ class Yawg < Sinatra::Base
     session.delete :p_conflict
     session.delete :r_conflict
     session.delete :no_round
-    if params[:existing] == 'true' then
-      if @@rounds[params[:round]] then
-        if @@rounds[params[:round]].add_player(params[:username]) then
-          set_session
-          send_staging :info_existing, :controls_staging_existing
-        else
-          "adding player to round failed"
-          if session[:username] then
-            '<script>window.location = "/"</script>'
+    if params[:username] && params[:round] then
+      if params[:existing] == 'true' then
+        if @@rounds[params[:round]] then
+          if @@rounds[params[:round]].add_player(params[:username]) then
+            set_session
+            send_staging :info_existing, :controls_staging_existing
           else
-            session[:p_conflict] = params[:username]
-            '<script>window.location = "/"</script>'
+            "adding player to round failed"
+            if session[:username] then
+              redirect to('/')
+            else
+              session[:p_conflict] = params[:username]
+              redirect to('/')
+            end
+          end
+        else
+          session[:no_round] = true
+          redirect to('/')
+        end
+      elsif params[:existing] == 'false' then
+        unless @@rounds[params[:round]] then
+          @@rounds.store( params[:round], Round.new( name: params[:round] ) )
+          @@rounds[params[:round]].add_observer(WSController.instance)
+          @@rounds[params[:round]].add_player(params[:username])
+          @@rounds[params[:round]].player(params[:username]).is_host = true
+          set_session
+          send_staging :info_new, :controls_staging_new
+        else
+          if session[:username] then
+            redirect to('/')
+          else
+            session[:r_conflict] = params[:round]
+            redirect to('/')
           end
         end
-      else
-        session[:no_round] = true
-        '<script>window.location = "/"</script>'
       end
-    elsif params[:existing] == 'false' then
-      unless @@rounds[params[:round]] then
-        @@rounds.store( params[:round], Round.new( name: params[:round] ) )
-        @@rounds[params[:round]].add_observer(WSController.instance)
-        @@rounds[params[:round]].add_player(params[:username])
-        @@rounds[params[:round]].player(params[:username]).is_host = true
-        set_session
-        send_staging :info_new, :controls_staging_new
-      else
-        if session[:username] then
-          '<script>window.location = "/"</script>'
-        else
-          session[:r_conflict] = params[:round]
-          '<script>window.location = "/"</script>'
-        end
-      end
+    else
+      redirect to('/'), "フォームが不正です"
     end
   end
 
@@ -83,10 +85,7 @@ class Yawg < Sinatra::Base
     else
       exit_round
       session.clear
-      '<script>
-         alert("ゲームは終了しています。");
-         window.location = "/";
-      </script>'
+      redirect to('/'), 'ゲームは終了しています。'
     end
   end
 
@@ -140,7 +139,7 @@ class Yawg < Sinatra::Base
   get '/round/exit' do
     exit_round
     session.clear
-    '<script>window.location = "/"</script>'
+    redirect to('/')
   end
 
   helpers do

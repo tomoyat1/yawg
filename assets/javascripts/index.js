@@ -2,10 +2,10 @@
 // = require bootstrap-sass/assets/javascripts/bootstrap.min.js
 
 $(function() {
-  participation();
+  index();
 });
 
-function participation() {
+function index() {
   $.ajax({
     url: "/round/list",
     success: function(data) {
