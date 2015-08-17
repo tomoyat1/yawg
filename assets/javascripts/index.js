@@ -2,10 +2,10 @@
 // = require bootstrap-sass/assets/javascripts/bootstrap.min.js
 
 $(function() {
-  participation();
+  index();
 });
 
-function participation() {
+function index() {
   $.ajax({
     url: "/round/list",
     success: function(data) {
@@ -33,10 +33,10 @@ function participation() {
       $form.submit();
     } else {
       if (!$form.find("[name=username]").val())
-        $form.find("[name=username]").parent().addClass("has-error");
+        $form.find("[name=username][type=text]").parent().addClass("has-error");
       if (!$form.find("[name=round]").val())
         $form.find("div.round-list-header").addClass("list-group-item-danger");
-        $form.find("[name=round]").parent().addClass("has-error");
+        $form.find("[name=round][type=text]").parent().addClass("has-error");
     }
   });
 
