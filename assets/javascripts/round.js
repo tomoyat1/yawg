@@ -140,12 +140,17 @@ function add_action_event_listeners(socket) {
         data_out.targets.push(target);
     });
 
-    if (data_out.targets.length == 0)
+    var is_data_correct = true;
+    if (data_out.targets.length == 0) {
       data_out.targets.push('');
+      is_data_correct = false;
+    }
 
     socket.send("" + JSON.stringify(data_out));
-    $("a.single-select").off('click');
-    $("a.quad-state").off('click');
+    if (is_data_correct) {
+      $("a.single-select").off('click');
+      $("a.quad-state").off('click');
+    }
   });
 
   $("button.extend").click(function() {
