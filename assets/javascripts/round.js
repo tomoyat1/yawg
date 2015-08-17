@@ -169,14 +169,16 @@ function add_action_event_listeners(socket) {
 }
 
 function add_player_event_listeners(socket) {
-  $("a.single-select").click(function() {
+  $("a.single-select").click(function(e) {
+    e.preventDefault();
     $(this).parent().children("a").removeClass("list-group-item-info");
     $(this).parent().children("a").attr("data-selected", "false")
     $(this).addClass("list-group-item-info");
     $(this).attr("data-selected", "true")
   });
 
-  $("a.quad-state").click(function() {
+  $("a.quad-state").click(function(e) {
+    e.preventDefault();
     var clicked = $(this);
     target = clicked.attr('data-target');
     score = parseInt(clicked.attr('data-score'));

@@ -9,12 +9,14 @@
 
 div.info {
   div.panel-body {
-    height: 6em;
+    height: 10em;
     padding: 0 1em;
-    overflow-y: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    z-index: 0;
 
     > div {
-      margin-top: 2em;
+      margin-top: 0;
     }
   }
 }
