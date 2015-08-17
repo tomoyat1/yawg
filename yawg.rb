@@ -15,7 +15,7 @@ class Yawg < Sinatra::Base
 
   set :server, 'thin'
   
-  set :assets_precompile, %w(application.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
+  set :assets_precompile, %w(index.js round.js application.css *.png *.jpg *.svg *.eot *.ttf *.woff)
   set :assets_css_compressor, :sass
   register Sinatra::AssetPipeline
   settings.sprockets.append_path 'bower_components'
