@@ -92,7 +92,10 @@ class Round
       add_phase Night.new(1)
 
       role_array = Array.new
-      role_hash.each do |key, value|
+      filtered_role_hash = role_hash.reject do |key,value| 
+        value.class != Fixnum && value.class != Bignum 
+      end
+      filtered_role_hash.each do |key, value|
         value.times do
           role_array << key
         end
