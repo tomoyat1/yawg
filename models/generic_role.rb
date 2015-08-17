@@ -68,9 +68,12 @@ module Role
       @divine_result
     end
 
+    def reset_state
+      @action_queue = Array.new
+    end
+
     def release_owner
       @owner = nil
     end
-
   end
 end

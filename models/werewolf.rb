@@ -7,7 +7,6 @@ module Role
       super
       @name = "人狼"
       @realtime_hitlist = Hash.new
-      @action_queue = Array.new
       @night_action_name = "殺害候補を確定する"
       @player_list_f = :player_list_with_selections_quadstate
       @divine_result = "人狼"
@@ -32,6 +31,7 @@ module Role
     def execute_actions
       score_hash = Hash.new
       kill_queue = Array.new
+=begin
       @realtime_hitlist.each do |target, hash|
         score_hash.store target, 0
         hash.each do |player, score|
@@ -42,11 +42,29 @@ module Role
           kill_queue << owner.player( target )
         end
       end
+=end
+      @action_queue.each do |target|
+        unless score_hash.key?( target.name ) then
+          score_hash.store target.name, 0
+        end
+        score_hash[target.name] += 1
+      end
+
+      max = score_hash.values.max
+      score_hash.each do |target_name, score|
+        if score == max then
+          kill_queue << owner.player( target_name )
+        end
+      end
+
       unless kill_queue.empty? then
         kill_queue.shuffle!
-        kill_queue.last.die
-        killed_name = kill_queue.last.name
-        owner.message "#{killed_name}は殺されました。"
+        if kill_queue.last.die then
+          killed_name = kill_queue.last.name
+          owner.message "#{killed_name}は殺されました。"
+        else
+          owner.message '誰も殺されませんでした'
+        end
       else
         owner.message "人狼達は誰を殺すか合意できなかったようです..."
         owner.inactivity_strike
@@ -75,6 +93,7 @@ module Role
 
     def reset_state
       @realtime_hitlist = Hash.new
+      super
     end
   end
 end
