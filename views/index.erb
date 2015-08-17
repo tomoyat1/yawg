@@ -19,6 +19,12 @@
     そのゲームは存在しません。もう一度選び直してください。
   </div>
 <% end %>
+<% if wrong_passcode %>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    パスコードが違います。
+  </div>
+<% end %>
 <div class="main">
   <div class="col-sm-6">
     <div class="panel panel-default">

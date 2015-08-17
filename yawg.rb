@@ -33,20 +33,24 @@ class Yawg < Sinatra::Base
     session.delete :p_conflict
     session.delete :r_conflict
     session.delete :no_round
+    session.delete :wrong_passcode
     if params[:username] && params[:round] then
       if params[:existing] == 'true' then
         if @@rounds[params[:round]] then
-          if @@rounds[params[:round]].add_player(params[:username]) then
+          add_result = @@rounds[params[:round]].add_player(params[:username], params[:passcode] )
+          if add_result == :success then
             set_session
             send_staging :info_existing, :controls_staging_existing
-          else
-            "adding player to round failed"
+          elsif add_result == :conflict
             if session[:username] then
               redirect to('/')
             else
               session[:p_conflict] = params[:username]
               redirect to('/')
             end
+          elsif add_result == :wrong_passcode then
+            session[:wrong_passcode] = true
+            redirect to('/')
           end
         else
           session[:no_round] = true
@@ -54,9 +58,9 @@ class Yawg < Sinatra::Base
         end
       elsif params[:existing] == 'false' then
         unless @@rounds[params[:round]] then
-          @@rounds.store( params[:round], Round.new( name: params[:round] ) )
+          @@rounds.store( params[:round], Round.new( name: params[:round], passcode: params[:passcode] ) )
           @@rounds[params[:round]].add_observer(WSController.instance)
-          @@rounds[params[:round]].add_player(params[:username])
+          @@rounds[params[:round]].add_player(params[:username], params[:passcode])
           @@rounds[params[:round]].player(params[:username]).is_host = true
           set_session
           send_staging :info_new, :controls_staging_new
@@ -150,7 +154,8 @@ class Yawg < Sinatra::Base
         erb :index, :locals => { :location => 'Top',
                                  :p_conflict => session[:p_conflict],
                                  :r_conflict => session[:r_conflict],
-                                 :no_round => session[:no_round] }
+                                 :no_round => session[:no_round],
+                                 :wrong_passcode => session[:wrong_passcode] }
       end
     end
     
