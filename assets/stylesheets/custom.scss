@@ -11,7 +11,7 @@ div.info {
   div.panel-body {
     height: 6em;
     padding: 0 1em;
-    overflow-y: hidden;
+    overflow-y: scroll;
 
     > div {
       margin-top: 2em;

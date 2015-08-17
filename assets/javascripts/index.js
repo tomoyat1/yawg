@@ -52,7 +52,8 @@ function index() {
         $("div.rounds").html(data);
         if (selected != '')
           $("a.round[data-round=" + selected + "]").addClass("list-group-item-info");
-        $("a.round").click(function() {
+        $("a.round").click(function(e) {
+          e.preventDefault();
           var $clicked = $(this)
           $clicked.parent().children("a.round").removeClass("list-group-item-info");
           $clicked.addClass("list-group-item-info");
