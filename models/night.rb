@@ -40,7 +40,7 @@ module Phase
     def execute_non_imediate_actions
       super
       role_hash = owner.roles
-      #role_hash['Knight'].execute_actions
+      role_hash['Knight'].execute_actions
       role_hash['Werewolf'].execute_actions
       return :proceed
     end
