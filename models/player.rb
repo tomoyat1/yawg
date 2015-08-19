@@ -43,12 +43,4 @@ class Player
   def release_role
     @role = nil
   end
-
-  def controls_f
-    if @is_host then
-      :controls_round_host
-    else
-      :controls_round
-    end
-  end
 end
