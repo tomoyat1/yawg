@@ -47,7 +47,7 @@ module Phase
       end
       
       if hit_list.length == 1 then
-        victim = owner.player( hit_list.first ).die
+        victim = owner.player( hit_list.first )
         victim.die
         owner.chats['spirit'].add_player victim
         killed = victim.name
