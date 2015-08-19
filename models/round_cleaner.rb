@@ -14,7 +14,7 @@ class RoundCleaner
           if @time_left[round_name] <= 0 then
             release round_name
           elsif @time_left[round_name] == 1 then
-            Yawg.send_msg_to_round round_name, "1分以内に開始しないとゲームは削除されます。"
+            Yawg.send_msg_to_round round_name, "あと1分でゲームは削除されます。"
           end
         end
       end
@@ -27,8 +27,8 @@ class RoundCleaner
     Yawg.delete_round round_name
   end
 
-  def monitor_round_in_staging(round_name)
-    @time_left.store round_name, 5
+  def monitor_round(round_name)
+    @time_left.store round_name, 1440
   end
 
   def disable_monitoring(round_name)
