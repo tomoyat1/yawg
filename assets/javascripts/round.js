@@ -60,12 +60,13 @@ function round() {
             $("div.info div.panel-body")
               .scrollTop($("div.info div.panel-body > div").height());
           }
-          if (data_in.chat) {
-            $("div.chat div.panel-body > div").append(data_in.chat);
-            $("div.chat div.panel-body")
-              .scrollTop($("div.chat div.panel-body > div").height());
+          if (data_in.controls) {
+            $("div.controls").fadeOut(50, function() {
+              $(this).html(data_in.controls);
+              $(this).fadeIn(50);
+              add_action_event_listeners(socket);
+            });
           }
-        } else if (data_in.action == 'revote') {
         } else if (data_in.action == 'round_result') {
           if (data_in.phase) {
             $("h1.phase").fadeOut(50, function() {
@@ -86,6 +87,12 @@ function round() {
               add_action_event_listeners(socket);
             });
           }
+        } else if (data_in.action == 'chat') {
+          if (data_in.msg) {
+            $("div.chat-display > div").append(data_in.msg);
+            $("div.chat-display")
+              .scrollTop($("div.chat-display > div").height());
+          }
         } else if (data_in.action == 'quad_state_score') {
           $("a.quad-state[data-target='" + data_in.player + "']").children("span.badge").text(data_in.score);
 
@@ -97,6 +104,8 @@ function round() {
               s_list.append("<li>" + index +": " + s_hash[index] + "</li>");
             }
           }
+        } else if (data_in.action == 'chat') {
+          alert(data_in.msg);
         }
       }
     }
@@ -165,6 +174,17 @@ function add_action_event_listeners(socket) {
       command: "skip"
     };
     socket.send("" + JSON.stringify(data_out));
+  });
+  $("button.chat[type=submit]").click(function(e) {
+    e.preventDefault();
+    var data_out = {
+      command: "chat"
+    }
+    $form = $("div.chat").find("form");
+    data_out['msg'] = $form.find("[name=chat_msg]").val();
+    data_out['room_name'] = $form.find("[name=chat_room]").val();
+    socket.send("" + JSON.stringify(data_out));
+    data_out['msg'] = $form.find("[name=chat_msg]").val('');
   });
 }
 

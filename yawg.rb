@@ -59,7 +59,7 @@ class Yawg < Sinatra::Base
       elsif params[:existing] == 'false' then
         unless @@rounds[params[:round]] then
           @@rounds.store( params[:round], Round.new( name: params[:round], passcode: params[:passcode] ) )
-          @@rounds[params[:round]].add_observer(WSController.instance)
+          @@rounds[params[:round]].add_observer WSController.instance
           @@rounds[params[:round]].add_player(params[:username], params[:passcode])
           @@rounds[params[:round]].player(params[:username]).is_host = true
           set_session
@@ -129,6 +129,10 @@ class Yawg < Sinatra::Base
               round.current_phase.extend_phase 1
             elsif msg_hash['command'] == 'skip' then
               round.current_phase.skip_remaining_time
+            elsif msg_hash['command'] == 'chat' then
+              round.handle_chat_msg player_name: session[:username],
+                                    msg: msg_hash['msg'],
+                                    room_name: msg_hash['room_name']
             end
           end
         end

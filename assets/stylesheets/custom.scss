@@ -28,6 +28,23 @@ div.info {
     }
   }
 }
+div.chat {
+  > form {
+    margin-top: 10px;
+  }
+
+  > div.chat-display {
+    height: 6em;
+    padding: 0 1em;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    z-index: 0;
+
+    > div {
+      margin-top: 0;
+    }
+  }
+}
 
 button.list-group-item {
   &:focus {

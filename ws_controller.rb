@@ -46,9 +46,9 @@ class WSController
 
   def queue_erb(file_key, msg_key:, locals: {})
     file_path = "views/#{file_key.id2name}.erb"
-    template = Tilt.new(file_path)
+    template = Tilt.new file_path
     rendered_string = template.render(self, locals)
-    add_to_next_msg(key: msg_key, value: rendered_string)
+    add_to_next_msg key: msg_key, value: rendered_string
   end
 
   def update(players:, round:, **args)
@@ -70,6 +70,8 @@ class WSController
       send_action_result players, round, args[:result]
     elsif args[:timer_message] then
       send_message players, round, args[:msg]
+    elsif args[:round_chat] then
+      send_chat_msg players, round, args[:msg]
     elsif args[:force_kill] then
       kill_connections_in_round players, round
     end
@@ -135,6 +137,7 @@ class WSController
       add_to_next_msg key: :info, value: 'あなたは殺されました。以後霊界からゲームを傍観してください。'
       queue_erb( :player_list, msg_key: :players,
                               locals: { players: round.players } )
+      queue_erb( :controls_spirit, msg_key: :controls )
       send_msg_to_player_in_round player: player, round: round
     end
   end
@@ -196,6 +199,14 @@ class WSController
     players.each_value do |player|
       add_to_next_msg key: :action, value: 'in_round'
       add_to_next_msg key: :info, value: format_info( msg )
+      send_msg_to_player_in_round player: player, round: round
+    end
+  end
+
+  def send_chat_msg(players, round, msg)
+    players.each_value do |player|
+      add_to_next_msg key: :action, value: 'chat'
+      add_to_next_msg key: :msg, value: msg
       send_msg_to_player_in_round player: player, round: round
     end
   end

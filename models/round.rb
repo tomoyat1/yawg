@@ -21,6 +21,7 @@ class Round
   attr_reader :phases
   attr_reader :roles
   attr_reader :in_progress
+  attr_reader :chats
 
   def initialize(name:, passcode:)
     @in_progress = false
@@ -30,6 +31,9 @@ class Round
     @roles = Hash.new
     @round_survey = Hash.new
     @inactivity_strikes = 0
+    @chats = Hash.new
+    @chats.store 'spirit', RoundChat.new( 'spirit' )
+    @chats['spirit'].owner = self
 
     if passcode == '' then
       @passcode = nil
@@ -240,6 +244,24 @@ class Round
                      round: self,
                      timer_message: true,
                      msg: msg
+  end
+
+  def handle_chat_msg(player_name:, msg:, room_name:)
+    chat_hash = @chats[room_name].send_msg player: player( player_name ),
+                                             msg: msg
+    if chat_hash then
+      changed
+      notify_observers players: chat_hash[:players],
+                       round: self,
+                       round_chat: true,
+                       msg: chat_hash[:msg]
+    end
+=begin
+    When :round_chat is :chat, both in keyword of notify_observers and the
+    coresponding elsif statement in WSController#update, the Round object passed
+    to notify_observers becomes nil in WSController#update. Unexplainable.
+=end
+
   end
 
   def release_round **args

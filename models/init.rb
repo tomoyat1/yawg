@@ -1,4 +1,5 @@
 require_relative 'round_cleaner'
+require_relative 'round_chat'
 
 require_relative 'round'
 require_relative 'player'

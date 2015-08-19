@@ -31,18 +31,7 @@ module Role
     def execute_actions
       score_hash = Hash.new
       kill_queue = Array.new
-=begin
-      @realtime_hitlist.each do |target, hash|
-        score_hash.store target, 0
-        hash.each do |player, score|
-          score_hash[target] += score
-        end
-        max = score_hash.values.max
-        if score_hash[target] == max then
-          kill_queue << owner.player( target )
-        end
-      end
-=end
+
       @action_queue.each do |target|
         unless score_hash.key?( target.name ) then
           score_hash.store target.name, 0
@@ -60,6 +49,7 @@ module Role
       unless kill_queue.empty? then
         kill_queue.shuffle!
         if kill_queue.last.die then
+          owner.chats['spirit'].add_player kill_queue.last
           killed_name = kill_queue.last.name
           owner.message "#{killed_name}は殺されました。"
         else
