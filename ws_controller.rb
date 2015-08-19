@@ -99,10 +99,10 @@ class WSController
     players.each_value do |player|
       add_to_next_msg( key: :action, value: 'in_round' )
       add_to_next_msg( key: :phase, value: round.phases.last.shown_name )
-      
+
       role_msg = format_info player.role.role_msg
       add_to_next_msg( key: :info, value: role_msg )
-      queue_erb( player.controls_f, msg_key: :controls, 
+      queue_erb( :controls_round, msg_key: :controls,
                           locals: { action_name: round.action_name_of_player(player) } )
 
       player_list = round.current_phase.get_player_list player
@@ -124,7 +124,7 @@ class WSController
       pl_without_self = players.reject {|key, value| value == player }
       queue_erb( player_list, msg_key: :players,
                           locals: { players: pl_without_self } )
-      queue_erb( player.controls_f, msg_key: :controls, 
+      queue_erb( :controls_round, msg_key: :controls,
                           locals: { action_name: round.action_name_of_player(player) } )
       send_msg_to_player_in_round player: player, round: round
     end
@@ -148,12 +148,12 @@ class WSController
       unless candidates.key?( player.name ) then
         queue_erb( :player_list_with_selections, msg_key: :players,
                             locals: { players: candidates } )
-        queue_erb( player.controls_f, msg_key: :controls, 
+        queue_erb( :controls_round, msg_key: :controls,
                             locals: { action_name: round.action_name_of_player(player) } )
       else
         queue_erb( :player_list, msg_key: :players,
                             locals: { players: candidates } )
-        queue_erb( player.controls_f, msg_key: :controls, 
+        queue_erb( :controls_round, msg_key: :controls,
                             locals: { action_name: nil } )
       end
       send_msg_to_player_in_round player: player, round: round
@@ -167,7 +167,7 @@ class WSController
       queue_erb( :player_list_with_roles, msg_key: :players,
                                           locals: { winners: winners, losers: losers } )
       queue_erb( :controls_results, msg_key: :controls )
-                 
+
       send_msg_to_player_in_round player: player, round: round
     end
   end
