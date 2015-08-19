@@ -43,7 +43,7 @@ class Round
 
     GenericRole.desendants.each{|desendant| add_role(desendant.new) }
 
-    RoundCleaner.instance.monitor_round_in_staging @name
+    RoundCleaner.instance.monitor_round @name
   end
 
   def add_player(name, passcode)
@@ -91,7 +91,6 @@ class Round
 
   def init_round(role_hash)
     unless @in_progress then
-      RoundCleaner.instance.disable_monitoring name
       @in_progress = true
       add_phase Night.new(1)
 
