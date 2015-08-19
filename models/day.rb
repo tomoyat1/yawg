@@ -47,8 +47,10 @@ module Phase
       end
       
       if hit_list.length == 1 then
-        owner.player( hit_list.first ).die
-        killed = hit_list.first
+        victim = owner.player( hit_list.first ).die
+        victim.die
+        owner.chats['spirit'].add_player victim
+        killed = victim.name
         owner.message "#{killed}が吊られました。"
         return :proceed
       elsif hit_list.length == 0 then
