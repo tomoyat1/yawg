@@ -27,15 +27,12 @@ module Phase
             targets.each do |target|
               player.role.stage_action target: target 
             end
-            puts "direct"
             result_str = player.role.execute_actions
           end
           @action_confirmed << player.name
         end
         result.store :player, player
         result.store :msg, result_str
-      else
-        puts "Uh oh..."
       end 
       result
     end

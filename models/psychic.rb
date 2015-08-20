@@ -10,7 +10,6 @@ module Role
     end
       
     def execute_actions
-      puts "Psychic action"
       if owner.last_killed then
         if owner.last_killed.role.class == Werewolf then
           return "処刑された#{owner.last_killed.name}は人狼でした。"
