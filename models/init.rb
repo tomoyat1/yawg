@@ -10,6 +10,7 @@ require_relative 'werewolf'
 require_relative 'diviner'
 require_relative 'knight'
 require_relative 'madman'
+require_relative 'psychic'
 
 require_relative 'generic_phase'
 require_relative 'day'
