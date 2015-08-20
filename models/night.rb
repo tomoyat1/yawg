@@ -15,7 +15,7 @@ module Phase
       result = Hash.new
       result_str = ''
       if @action_confirmed.index( player.name ) == nil then
-        if targets[0] == nil then
+        if targets[0] == nil && !player.role.night_action_auto then
           result_str = '能力を発動する相手を選んでください。'
         else
           unless player.role.night_action_direct? then
@@ -27,12 +27,15 @@ module Phase
             targets.each do |target|
               player.role.stage_action target: target 
             end
+            puts "direct"
             result_str = player.role.execute_actions
           end
           @action_confirmed << player.name
         end
         result.store :player, player
         result.store :msg, result_str
+      else
+        puts "Uh oh..."
       end 
       result
     end

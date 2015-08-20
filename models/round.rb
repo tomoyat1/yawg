@@ -20,6 +20,7 @@ class Round
   attr_reader :name
   attr_reader :phases
   attr_reader :roles
+  attr_accessor :last_killed
   attr_reader :in_progress
   attr_reader :chats
 
@@ -132,7 +133,8 @@ class Round
           execute_survey
           if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
             @roles['Werewolf'].reset_state
-            #@roles['Knight'].reset_state
+            @roles['Knight'].reset_state
+            @roles['Psychic'].reset_state
             if current_phase.class == Night then
               add_phase Day.new( current_phase.index )
             else

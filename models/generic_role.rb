@@ -5,6 +5,10 @@ module Role
 
     attr_reader :name
     attr_accessor :owner
+    attr_reader :player_list_f
+    attr_reader :day_action_name
+    attr_reader :night_action_name
+    attr_reader :night_action_auto
     attr_reader :is_count_evil
     attr_reader :is_side_evil
 
@@ -27,6 +31,7 @@ module Role
       @night_action_name = nil
       @player_list_f = :player_list
       @night_action_direct = false
+      @night_action_auto = false
       @divine_result = '市民'
       @is_count_evil = false
       @is_side_evil = false
@@ -36,24 +41,8 @@ module Role
       @players << player.name
     end
 
-    def player_list_f
-      @player_list_f
-    end
-
     def role_msg
       role_msg = "あなたの役職は#{@name}です。"
-    end
-
-    def night_action_direct?
-      @night_action_direct
-    end
-
-    def day_action_name
-      @day_action_name
-    end
-
-    def night_action_name
-      @night_action_name
     end
 
     def stage_action(target:)
@@ -62,6 +51,10 @@ module Role
 
     def execute_actions
       #stub
+    end
+
+    def night_action_direct?
+      @night_action_direct
     end
 
     def divine
