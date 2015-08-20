@@ -50,7 +50,7 @@ module Phase
         victim = owner.player( hit_list.first )
         victim.die
         owner.chats['spirit'].add_player victim
-        owner.message "#{victim.name}が吊られました。"
+        owner.message "#{victim.name}が処刑されました。"
         owner.last_killed = victim
         return :proceed
       elsif hit_list.length == 0 then
