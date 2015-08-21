@@ -1,5 +1,44 @@
+//Branding
 $brand-primary: #404040;
-$text-color: $brand-primary;
+$brand-info: $gray-lighter;
+//$text-color: $brand-primary;
+$body-bg: $brand-primary;
+$text-color: $gray-lighter;
+
+$headings-color: $gray-lighter;
+$headings-small-color: $gray-light;
+
+//Buttons
 $btn-default-bg: $gray-lighter;
-$panel-default-heading-bg: $brand-primary;
-$panel-default-text: $gray-lighter;
+
+//Panels
+$panel-bg: $gray;
+$panel-default-border: #111;
+
+//List Groups
+$list-group-bg: $gray;
+$list-group-hover-bg: $brand-primary;
+$list-group-border: #111;
+$list-group-link-color: $gray-lighter;
+
+//States
+$state-info-text: $brand-primary;
+$state-info-bg: $gray-lighter;
+
+$state-success-text: #0d800d;
+$state-success-bg: #49c949;
+
+$state-warning-text: #8f7c0e;
+$state-warning-bg: #e6d453;
+
+$state-danger-text: #8f0e15;
+$state-danger-bg: #e6535a;
+
+//Alerts
+$alert-warning-bg:            $state-warning-bg;
+$alert-warning-text:          $state-warning-text;
+$alert-warning-border:        $state-warning-border;
+
+$alert-danger-bg:             $state-danger-bg;
+$alert-danger-text:           $state-danger-text;
+$alert-danger-border:         $state-danger-border;
