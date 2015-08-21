@@ -99,6 +99,8 @@ class Round
       filtered_role_hash = role_hash.reject do |key,value| 
         value.class != Fixnum && value.class != Bignum 
       end
+
+      #Ensure min value are respected
       filtered_role_hash.each do |key, value|
         value.times do
           role_array << key
@@ -110,6 +112,17 @@ class Round
         end
       end
       role_array.shuffle!
+      player_count = @players.size
+      while role_array.size > player_count do
+        role_array.pop
+      end
+
+      #Check if there is at least one Werewolf
+      if role_array.count( 'Werewolf' ) == 0 then
+        role_array.pop
+        role_array << 'Werewolf'
+      end
+
       @players.values.each_index do |i|
         @players.values[i].role = @roles[role_array[i]]
       end
