@@ -112,8 +112,9 @@ class Yawg < Sinatra::Base
             round = @@rounds[session[:round]]
             if msg_hash['command'] == 'start' then
               if @@rounds[session[:round]] then
-                role_count = msg_hash['role_count']
-                round.init_round role_count
+                role_rand = msg_hash['role_rand']
+                role_min = msg_hash['role_min']
+                round.init_round role_rand, role_min
               else
                 WSController.instance.send_msg_to_socket ws, "ゲームは削除されました。ゲームから抜けてください。"
               end
