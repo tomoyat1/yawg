@@ -124,6 +124,7 @@ function round() {
     }
     socket.onclose = function() {
       clearInterval(pinger);
+      round();
     }
   }
 
