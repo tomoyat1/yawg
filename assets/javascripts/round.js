@@ -13,9 +13,19 @@ function round() {
     .scrollTop($("div.info div.panel-body > div").height());
   var uri = "ws://" + location.host + "/round/status";
   var socket = null;
+  var pinger = null;
 
   if (socket == null) {
     socket = new WebSocket(uri);
+    socket.onopen = function() {
+      pinger = setInterval(function() {
+        var data_out = {
+          action: 'ping'
+        }
+        socket.send('' + JSON.stringify(data_out));
+      }, 45);
+
+    }
     socket.onmessage = function(event) {
       if (event && event.data) {
         var data_in = $.parseJSON(event.data);
@@ -111,6 +121,9 @@ function round() {
     }
     socket.onerror = function() {
       alert("error");
+    }
+    socket.onclose = function() {
+      clearInterval(pinger);
     }
   }
 
