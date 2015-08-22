@@ -27,6 +27,10 @@ class Player
     @is_protected = true
   end
 
+  def unprotect
+    @is_protected = false
+  end
+
   def role=(role)
     @role = role
     role.add_player(self)
