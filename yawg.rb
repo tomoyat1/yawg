@@ -105,6 +105,7 @@ class Yawg < Sinatra::Base
       request.websocket do |ws|
         ws.onopen do
           WSController.instance.add_socket( ws, session[:username], session[:round] )
+          puts "#{session[:username]} connected"
         end
         ws.onmessage do |msg|
           msg_hash = JSON.parse msg
