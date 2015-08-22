@@ -122,11 +122,31 @@ function add_staging_event_listeners(socket) {
     var data_out = {
       command: "start"
     };
-    data_out.role_count = new Object;
-    $("input.role-count").each(function () {
-      data_out.role_count[$(this).attr("name")] = parseInt($(this).val(), 10);
+    data_out.role_rand = new Object;
+    data_out.role_min = new Object;
+    var fail = false;
+    $("input.role-max").each(function () {
+      $role_input = $(this).parents().eq(2);
+      $cor_min = $role_input.find("input.role-min");
+      if (parseInt($(this).val(), 10) < parseInt($cor_min.val(), 10)) {
+        $role_input.children().addClass("has-error");
+        fail = true;
+        return true;
+      } else {
+        data_out.role_rand[$(this).attr("name")]
+           = parseInt($(this).val(), 10) - parseInt($cor_min.val(), 10);
+      }
     });
-    socket.send("" + JSON.stringify(data_out));
+    $("input.role-min").each(function () {
+      data_out.role_min[$(this).attr("name")] = parseInt($(this).val(), 10);
+    });
+    if (!fail) {
+      socket.send("" + JSON.stringify(data_out));
+    } else {
+      $("div.info div.panel-body > div").append("<div>最大が最小の数以上にになるように役職の数を指定してください。</div>");
+      $("div.info div.panel-body")
+        .scrollTop($("div.info div.panel-body > div").height());
+    }
   });
 }
 

@@ -14,9 +14,18 @@
   <div class="list-group">
     <% roles.each_value do |role| %>
       <div class="list-group-item">
-        <div class="input-group">
-          <span class="input-group-addon"><%= role.name %></span>
-          <input class="form-control role-count" type="number" name="<%= role.class.class_name %>" min="0" value="0">
+        <div class="list-group-item-heading">
+          <h4><%= role.name %></h4>
+        </div>
+        <div class="list-group-item-text">
+          <div class="input-group">
+            <span class="input-group-addon">最大人数</span>
+            <input class="form-control role-max" type="number" name="<%= role.class.class_name %>" min="0" value="0">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">最小人数</span>
+            <input class="form-control role-min" type="number" name="<%= role.class.class_name %>" min="0" value="0">
+          </div>
         </div>
       </div>
     <% end %>

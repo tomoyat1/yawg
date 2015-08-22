@@ -90,38 +90,51 @@ class Round
     @roles.store(role.class.class_name, role)
   end
 
-  def init_round(role_hash)
+  def init_round(role_rand, role_min)
     unless @in_progress then
       @in_progress = true
       add_phase Night.new(1)
 
       role_array = Array.new
-      filtered_role_hash = role_hash.reject do |key,value| 
+      random_part = Array.new
+      required_part = Array.new
+
+      filtered_role_rand = role_rand.reject do |key,value| 
+        value.class != Fixnum && value.class != Bignum 
+      end
+      filtered_role_min = role_min.reject do |key,value| 
         value.class != Fixnum && value.class != Bignum 
       end
 
-      #Ensure min value are respected
-      filtered_role_hash.each do |key, value|
+      filtered_role_min.each do |key, value|
         value.times do
-          role_array << key
+          required_part << key
         end
       end
+
+      filtered_role_rand.each do |key,value|
+        value.times do
+          random_part << key
+        end
+      end
+      random_part.shuffle!
+
+      if required_part.count( 'Werewolf' ) == 0 and random_part.count( 'Werewolf' ) == 0 then
+        required_part << 'Werewolf'
+      end
+
+      role_array += required_part + random_part
+
       if role_array.size < @players.size then
         until role_array.size == @players.size
           role_array << "Villager" 
         end
+      elsif role_array.size > @players.size then
+        until role_array.size == @players.size
+          role_array.pop
+        end
       end
       role_array.shuffle!
-      player_count = @players.size
-      while role_array.size > player_count do
-        role_array.pop
-      end
-
-      #Check if there is at least one Werewolf
-      if role_array.count( 'Werewolf' ) == 0 then
-        role_array.pop
-        role_array << 'Werewolf'
-      end
 
       @players.values.each_index do |i|
         @players.values[i].role = @roles[role_array[i]]
