@@ -122,6 +122,7 @@ function add_staging_event_listeners(socket) {
     var data_out = {
       command: "start"
     };
+    data_out['first_kill'] = $("a.first-kill").data("bool");
     data_out.role_rand = new Object;
     data_out.role_min = new Object;
     var fail = false;
@@ -146,6 +147,18 @@ function add_staging_event_listeners(socket) {
       $("div.info div.panel-body > div").append("<div>最大が最小の数以上にになるように役職の数を指定してください。</div>");
       $("div.info div.panel-body")
         .scrollTop($("div.info div.panel-body > div").height());
+    }
+  });
+  $("a.single-select").click(function(e) {
+    e.preventDefault();
+    if($(this).data("bool")) {
+      $(this).data("bool", false);
+      $(this).removeClass("list-group-item-info");
+      $(this).children("span").text("なし");
+    } else {
+      $(this).data("bool", true);
+      $(this).addClass("list-group-item-info");
+      $(this).children("span").text("あり");
     }
   });
 }

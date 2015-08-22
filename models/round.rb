@@ -90,7 +90,7 @@ class Round
     @roles.store(role.class.class_name, role)
   end
 
-  def init_round(role_rand, role_min)
+  def init_round(role_rand, role_min, first_kill)
     unless @in_progress then
       @in_progress = true
       add_phase Night.new(1)
@@ -142,6 +142,11 @@ class Round
       
       changed
       notify_observers players: @players, round: self, round_start: true
+      unless first_kill then
+        @players.each_value do |player|
+          player.protect
+        end
+      end
       current_phase.start_phase
     else
       message "すでにゲームは開始されています。"
@@ -167,6 +172,9 @@ class Round
               add_phase Night.new( current_phase.index + 1 )
             end
 
+            @players.each_value do |player|
+              player.unprotect
+            end
             current_phase.start_phase
             alive = @players.select {|key, value| value.is_alive }
             changed
