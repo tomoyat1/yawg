@@ -142,7 +142,8 @@ class Yawg < Sinatra::Base
         end
         ws.onclose do
           puts "#{session[:username]}'s connection was terminated."
-          WSController.instance.delete_socket(session[:username], session[:round]) 
+          WSController.instance.delete_socket(session[:username], session[:round])
+          end
         end
       end
     end
