@@ -45,6 +45,7 @@ class Round
     GenericRole.desendants.each{|desendant| add_role(desendant.new) }
 
     RoundCleaner.instance.monitor_round @name
+    puts "Created round #{@name}"
   end
 
   def add_player(name, passcode)
