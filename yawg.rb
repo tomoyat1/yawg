@@ -90,7 +90,6 @@ class Yawg < Sinatra::Base
       exit_round
       session.clear
       redirect to('/'), 'ゲームは終了しています。'
-    else
     end
   end
 
@@ -143,7 +142,6 @@ class Yawg < Sinatra::Base
         ws.onclose do
           puts "#{session[:username]}'s connection was terminated."
           WSController.instance.delete_socket(session[:username], session[:round])
-          end
         end
       end
     end
