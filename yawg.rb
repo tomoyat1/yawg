@@ -90,6 +90,9 @@ class Yawg < Sinatra::Base
       exit_round
       session.clear
       redirect to('/'), 'ゲームは終了しています。'
+    else
+      
+      reconnect
     end
   end
 
@@ -176,8 +179,26 @@ class Yawg < Sinatra::Base
       erb :round, :locals => { :location => session[:round],
                               :info => info,
                               :controls => controls,
+                              :player_list => :player_list,
                               :players => players,
                               :roles => @@rounds[session[:round]].roles }
+    end
+
+    def reconnect
+      round = @@rounds[session[:round]]
+      player = round.player session[:username]
+      info = format_info "#{session[:round]}に再接続しました。"
+      controls = round.current_phase
+      player_list = round.current_phase.get_player_list player
+      pl_without_self = round.players.reject {|key, value| value == player }
+      erb :round_reconnect,
+                 :locals => { :location => session[:round],
+                              :info => :info_reconnected,
+                              :phase => round.current_phase.shown_name,
+                              :controls => :controls_round,
+                              :action_name => round.action_name_of_player( player ),
+                              :player_list => player_list,
+                              :players => pl_without_self }
     end
 
     def exit_round

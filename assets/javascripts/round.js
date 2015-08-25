@@ -129,6 +129,8 @@ function round() {
   }
 
   add_staging_event_listeners(socket);
+  add_action_event_listeners(socket);
+  add_player_event_listeners(socket)
 }
 
 function add_staging_event_listeners(socket) {
