@@ -1,6 +1,8 @@
 // = require jquery/dist/jquery.min.js
 // = require bootstrap-sass/assets/javascripts/bootstrap.min.js
 
+action_done = false;
+
 $(function() {
   if (window.location.pathname.match(/staging_/))
     player_list();
@@ -47,7 +49,6 @@ function round() {
             $("div.controls").fadeOut(50, function() {
               $(this).html(data_in.controls);
               $(this).fadeIn(50);
-              add_action_event_listeners(socket);
             });
           }
           if (data_in.players) {
@@ -55,7 +56,6 @@ function round() {
               $(this).html(data_in.players);
               $(this).fadeIn(50);
 
-              add_player_event_listeners(socket);
             });
           }
         } else if (data_in.action == 'spirit') {
@@ -74,7 +74,6 @@ function round() {
             $("div.controls").fadeOut(50, function() {
               $(this).html(data_in.controls);
               $(this).fadeIn(50);
-              add_action_event_listeners(socket);
             });
           }
         } else if (data_in.action == 'round_result') {
@@ -94,7 +93,6 @@ function round() {
             $("div.controls").fadeOut(50, function() {
               $(this).html(data_in.controls);
               $(this).fadeIn(50);
-              add_action_event_listeners(socket);
             });
           }
         } else if (data_in.action == 'chat') {
@@ -127,12 +125,13 @@ function round() {
       round();
     }
   }
-
   add_staging_event_listeners(socket);
+  add_action_event_listeners(socket);
+  add_player_event_listeners(socket);
 }
 
 function add_staging_event_listeners(socket) {
-  $("button.start").click(function() {
+  $(document).on('click', 'button.start', function() {
     var data_out = {
       command: "start"
     };
@@ -152,7 +151,7 @@ function add_staging_event_listeners(socket) {
            = parseInt($(this).val(), 10) - parseInt($cor_min.val(), 10);
       }
     });
-    $("input.role-min").each(function () {
+    $("input.role-min").each(function() {
       data_out.role_min[$(this).attr("name")] = parseInt($(this).val(), 10);
     });
     if (!fail) {
@@ -163,66 +162,67 @@ function add_staging_event_listeners(socket) {
         .scrollTop($("div.info div.panel-body > div").height());
     }
   });
-  $("a.single-select").click(function(e) {
+  $(document).on('click', "a.toggle", function(e) {
     e.preventDefault();
-    if($(this).data("bool")) {
-      $(this).data("bool", false);
-      $(this).removeClass("list-group-item-info");
-      $(this).children("span").text("なし");
+    if($(event.target).data("bool")) {
+      $(event.target).data("bool", false);
+      $(event.target).removeClass("list-group-item-info");
+      $(event.target).children("span").text("なし");
     } else {
-      $(this).data("bool", true);
-      $(this).addClass("list-group-item-info");
-      $(this).children("span").text("あり");
+      $(event.target).data("bool", true);
+      $(event.target).addClass("list-group-item-info");
+      $(event.target).children("span").text("あり");
     }
   });
 }
 
 function add_action_event_listeners(socket) {
-  $("button.action-name").click(function() {
-    var data_out = {
-      command: 'confirm_action',
-    }
-    data_out.targets = new Array;
+  $(document).on('click', "button.action-name", function() {
+    if (!action_done) {
+      var data_out = {
+        command: 'confirm_action',
+      }
+      data_out.targets = new Array;
 
-    $("a.single-select").each(function(index, element) {
-      if ($(element).attr("data-selected") == "true")
-        data_out.targets.push($(element).attr("data-target"));
-    });
+      $("a.single-select").each(function(index, element) {
+        if ($(element).attr("data-selected") == "true")
+          data_out.targets.push($(element).attr("data-target"));
+      });
 
-    $("a.quad-state").each(function(index, element) {
-      target = $(element).attr('data-target');
-      score = parseInt($(element).attr('data-score'));
-      for (i = 0; i < score; i++)
-        data_out.targets.push(target);
-    });
+      $("a.quad-state").each(function(index, element) {
+        target = $(element).attr('data-target');
+        score = parseInt($(element).attr('data-score'));
+        for (i = 0; i < score; i++)
+          data_out.targets.push(target);
+      });
 
-    var is_data_correct = true;
-    if (data_out.targets.length == 0) {
-      data_out.targets.push('');
-      is_data_correct = false;
-    }
+      var is_data_correct = true;
+      if (data_out.targets.length == 0) {
+        data_out.targets.push('');
+        is_data_correct = false;
+      }
 
-    socket.send("" + JSON.stringify(data_out));
-    if (is_data_correct) {
-      $("a.single-select").off('click');
-      $("a.quad-state").off('click');
+      socket.send("" + JSON.stringify(data_out));
+      if (is_data_correct) {
+        action_done = true;
+      }
     }
   });
 
-  $("button.extend").click(function() {
+  $(document).on('click', "button.extend", function() {
     var data_out = {
       command: "extend"
     };
     socket.send("" + JSON.stringify(data_out));
   });
 
-  $("button.skip").click(function() {
+  $(document).on('click', "button.skip", function() {
     var data_out = {
       command: "skip"
     };
     socket.send("" + JSON.stringify(data_out));
   });
-  $("button.chat[type=submit]").click(function(e) {
+  $(document).on('click', "button.chat[type=submit]", function(e) {
     e.preventDefault();
     var data_out = {
       command: "chat"
@@ -236,53 +236,56 @@ function add_action_event_listeners(socket) {
 }
 
 function add_player_event_listeners(socket) {
-  $("a.single-select").click(function(e) {
+  $(document).on('click', "a.single-select", function(e) {
     e.preventDefault();
-    $(this).parent().children("a").removeClass("list-group-item-info");
-    $(this).parent().children("a").attr("data-selected", "false")
-    $(this).addClass("list-group-item-info");
-    $(this).attr("data-selected", "true")
+    if (!action_done) {
+      $(event.target).parent().children("a").removeClass("list-group-item-info");
+      $(event.target).parent().children("a").attr("data-selected", "false")
+      $(event.target).addClass("list-group-item-info");
+      $(event.target).attr("data-selected", "true")
+    }
   });
 
-  $("a.quad-state").click(function(e) {
+  $(document).on('click', "a.quad-state", function(e) {
     e.preventDefault();
-    var clicked = $(this);
-    target = clicked.attr('data-target');
-    score = parseInt(clicked.attr('data-score'));
-    if (score < 3) {
-      clicked.attr('data-score', ++score);
-    } else {
-      score = 0
-      clicked.attr('data-score', score);
-    }
+    if (!action_done) {
+      var clicked = $(event.target);
+      target = clicked.attr('data-target');
+      score = parseInt(clicked.attr('data-score'));
+      if (score < 3) {
+        clicked.attr('data-score', ++score);
+      } else {
+        score = 0
+        clicked.attr('data-score', score);
+      }
 
-    switch (score) {
-      case 0: 
-        clicked.removeClass("list-group-item-danger");
-        break;
-      case 1:
-        clicked.addClass("list-group-item-success");
-        break;
-      case 2:
-        clicked.removeClass("list-group-item-success");
-        clicked.addClass("list-group-item-warning");
-        break;
-      case 3: 
-        clicked.removeClass("list-group-item-warning");
-        clicked.addClass("list-group-item-danger");
-        break;
-    }
+      switch (score) {
+        case 0: 
+          clicked.removeClass("list-group-item-danger");
+          break;
+        case 1:
+          clicked.addClass("list-group-item-success");
+          break;
+        case 2:
+          clicked.removeClass("list-group-item-success");
+          clicked.addClass("list-group-item-warning");
+          break;
+        case 3: 
+          clicked.removeClass("list-group-item-warning");
+          clicked.addClass("list-group-item-danger");
+          break;
+      }
 
-    var data_out = {
-      command: 'quad_state_score',
-      target: target,
-      score: score
-    };
-    socket.send("" + JSON.stringify(data_out));
+      var data_out = {
+        command: 'quad_state_score',
+        target: target,
+        score: score
+      };
+      socket.send("" + JSON.stringify(data_out));
+    }
   });
 
-  $("a.quad-state > span.badge").click(function(e) {
-    e.stopPropagation();
-    $(this).parent().children(".specifics").collapse('toggle');
+  $(document).on('click', "a.quad-state > span.badge", function(e) {
+    $(event.target).parent().children(".specifics").collapse('toggle');
   });
 }
