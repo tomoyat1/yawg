@@ -40,10 +40,10 @@ class Yawg < Sinatra::Base
           add_result = @@rounds[params[:round]].add_player(params[:username], params[:passcode] )
           if add_result == :success then
             set_session
-            send_staging :info_existing, :controls_staging_existing
+            redirect to('/round'), 303
           elsif add_result == :conflict
             if session[:username] then
-              redirect to('/')
+              redirect to('/round'), 303
             else
               session[:p_conflict] = params[:username]
               redirect to('/')
@@ -63,10 +63,10 @@ class Yawg < Sinatra::Base
           @@rounds[params[:round]].add_player(params[:username], params[:passcode])
           @@rounds[params[:round]].player(params[:username]).is_host = true
           set_session
-          send_staging :info_new, :controls_staging_new
+          redirect to('/round'), 303
         else
           if session[:username] then
-            redirect to('/')
+            redirect to('/round'), 303
           else
             session[:r_conflict] = params[:round]
             redirect to('/')
@@ -80,16 +80,17 @@ class Yawg < Sinatra::Base
 
   get '/round' do
     round = @@rounds[session[:round]]
-    if round then
+    if !round.in_progress then
       if round.player( session[:username] ).is_host
-        send_staging :info_reconnected, :controls_staging_new
+        send_staging :info_new, :controls_staging_new
       else
-        send_staging :info_reconnected, :controls_staging_existing
+        send_staging :info_existing, :controls_staging_existing
       end
-    else
+    elsif !round then
       exit_round
       session.clear
       redirect to('/'), 'ゲームは終了しています。'
+    else
     end
   end
 
