@@ -22,9 +22,11 @@ class WSController
   end
 
   def delete_socket(username, round_name)
-    @sockets[round_name].delete username
-    if @sockets[round_name].empty? then
-      @sockets.delete round_name
+    if @sockets[round_name] then
+      @sockets[round_name].delete username
+      if @sockets[round_name].empty? then
+        @sockets.delete round_name
+      end
     end
   end
 
