@@ -53,6 +53,18 @@ class WSController
     add_to_next_msg key: msg_key, value: rendered_string
   end
 
+  def send_reconnect(player:, round:)
+    add_to_next_msg key: :action, value: 'in_round'
+    add_to_next_msg key: :phase, value: round.current_phase.shown_name
+    player_list = round.current_phase.get_player_list player
+    pl_without_self = players.reject {|key, value| value == player }
+    queue_erb( player_list, msg_key: :players,
+                        locals: { players: pl_without_self } )
+    queue_erb( :controls_round, msg_key: :controls,
+                        locals: { action_name: round.action_name_of_player(player) } )
+    send_msg_to_player_in_round player: player, round: round
+  end
+
   def update(players:, round:, **args)
     if args[:players_changed] and @sockets.size != 0 then
       send_player_list players, round
