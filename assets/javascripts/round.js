@@ -1,7 +1,9 @@
 // = require jquery/dist/jquery.min.js
 // = require bootstrap-sass/assets/javascripts/bootstrap.min.js
 
-action_done = false;
+var action_done = false;
+var error = false;
+var reconnect_fails = 0;
 
 $(function() {
   if (window.location.pathname.match(/staging_/))
@@ -11,6 +13,8 @@ $(function() {
 });
 
 function round() {
+  reconnect_fails = 0;
+
   $("div.info div.panel-body")
     .scrollTop($("div.info div.panel-body > div").height());
   var uri = "ws://" + location.host + "/round/status";
@@ -118,11 +122,19 @@ function round() {
       }
     }
     socket.onerror = function() {
-      alert("error");
+      if (!error) {
+        error = true;
+        alert("エラーが発生しました。トップへ戻ります。");
+      }
+      error = false;
+      window.location = "/round/exit";
     }
     socket.onclose = function() {
       clearInterval(pinger);
-      round();
+      reconnect_fails++;
+      setTimeout(function() {
+        round();
+      }, (2 ^ reconnect_fails) * 1000);
     }
   }
   add_staging_event_listeners(socket);
