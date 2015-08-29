@@ -1,5 +1,6 @@
 # YAWG
-Yet Another Werewolf Game
+Yet Another Werewolf Game  
+Now playable at [http://yawg-game.com](http://yawg-game.com "YAWG")
 
 ## Requirements
 * Bundler
