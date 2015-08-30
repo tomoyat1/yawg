@@ -35,20 +35,20 @@
         <form method="post" action="/round" class="form-horizontal" data-existing="false">
           <div class="list-group-item">
             <div class="input-group">
-              <span class="input-group-addon">Username</span>
-              <input type="text" name="username" class="form-control" placeholder="ユーザー名">
+              <span class="input-group-addon">ユーザー名</span>
+              <input type="text" name="username" class="form-control" placeholder="ゲーム内で使うユーザー名">
             </div>
           </div>
           <div class="list-group-item">
             <div class="input-group">
-              <span class="input-group-addon">Round</span>
-              <input type="text" name="round" class="form-control" placeholder="ゲーム名">
+              <span class="input-group-addon">ゲーム名</span>
+              <input type="text" name="round" class="form-control" placeholder="新規ゲームの名前">
             </div>
           </div>
           <div class="list-group-item">
             <div class="input-group">
-              <span class="input-group-addon">Passcode</span>
-              <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(任意)" max="9999" min="1000">
+              <span class="input-group-addon">パスコード</span>
+              <input type="number" name="passcode" class="form-control" placeholder="ロックに使う4桁の番号(任意)" max="9999" min="0">
             </div>
           </div>
           <input type="hidden" name="existing" value="false">
@@ -66,14 +66,14 @@
         <form method="post" action="/round" class="form-horizontal" data-existing="true">
           <div class="list-group-item">
             <div class="input-group">
-              <span class="input-group-addon">Username</span>
-              <input type="text" name="username" class="form-control" placeholder="ユーザー名">
+              <span class="input-group-addon">ユーザー名</span>
+              <input type="text" name="username" class="form-control" placeholder="ゲーム内で使うユーザー名">
             </div>
           </div>
           <div class="list-group-item">
             <div class="input-group">
-              <span class="input-group-addon">Passcode</span>
-              <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(もし設定されていれば)" max="9999" min="1000">
+              <span class="input-group-addon">パスコード</span>
+              <input type="number" name="passcode" class="form-control" placeholder="4桁の番号(もし設定されていれば)" max="9999" min="0">
             </div>
           </div>
           <div class="rounds">
