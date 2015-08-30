@@ -7,6 +7,10 @@
       user-select: none;
 }
 
+div.main {
+  margin-bottom: 50px;
+}
+
 div.page-header {
   > h1 {
     @media screen and (max-width: 480px) {
