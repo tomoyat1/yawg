@@ -22,10 +22,12 @@ class Round
   attr_reader :roles
   attr_accessor :last_killed
   attr_reader :in_progress
+  attr_reader :done
   attr_reader :chats
 
   def initialize(name:, passcode:)
     @in_progress = false
+    @done  = false
     @name = name
     @players = Hash.new
     @phases = Array.new
@@ -304,6 +306,8 @@ class Round
   end
 
   def release_round **args
+    @done = true
+
     @roles.each_value do |role|
       role.release_owner
     end

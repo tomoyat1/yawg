@@ -80,7 +80,7 @@ class Yawg < Sinatra::Base
   end
 
   get '/round' do
-    if session[:username]
+    if session[:username] then
       round = @@rounds[session[:round]]
       if !round.in_progress then
         if round.player( session[:username] ).is_host
@@ -192,19 +192,26 @@ class Yawg < Sinatra::Base
 
     def reconnect
       round = @@rounds[session[:round]]
-      player = round.player session[:username]
-      info = format_info "#{session[:round]}に再接続しました。"
-      phase = round.current_phase.shown_name
-      player_list = round.current_phase.get_player_list player
-      pl_without_self = round.players.reject {|key, value| value == player }
-      erb :round_reconnect,
-                 :locals => { :location => session[:round],
-                              :info => :info_reconnected,
-                              :phase => phase,
-                              :controls => :controls_round,
-                              :action_name => round.action_name_of_player( player ),
-                              :player_list => player_list,
-                              :players => pl_without_self }
+      unless round.done then
+        player = round.player session[:username]
+        info = format_info "#{session[:round]}に再接続しました。"
+        phase = round.current_phase.shown_name
+        player_list = round.current_phase.get_player_list player
+        pl_without_self = round.players.reject {|key, value| value == player }
+        erb :round_reconnect,
+                   :locals => { :location => session[:round],
+                                :info => :info_reconnected,
+                                :phase => phase,
+                                :controls => :controls_round,
+                                :action_name => round.action_name_of_player( player ),
+                                :player_list => player_list,
+                                :players => pl_without_self }
+      else
+        exit_round
+        session.clear
+        session[:round_gone] = true
+        redirect to('/')
+      end
     end
 
     def exit_round
