@@ -174,8 +174,8 @@ function add_staging_event_listeners(socket) {
         .scrollTop($("div.info div.panel-body > div").height());
     }
   });
-  $(document).on('click', "a.toggle", function(e) {
-    e.preventDefault();
+  $(document).on('click', "a.toggle", function(event) {
+    event.preventDefault();
     if($(event.target).data("bool")) {
       $(event.target).data("bool", false);
       $(event.target).removeClass("list-group-item-info");
@@ -248,8 +248,8 @@ function add_action_event_listeners(socket) {
 }
 
 function add_player_event_listeners(socket) {
-  $(document).on('click', "a.single-select", function(e) {
-    e.preventDefault();
+  $(document).on('click', "a.single-select", function(event) {
+    event.preventDefault();
     if (!action_done) {
       $(event.target).parent().children("a").removeClass("list-group-item-info");
       $(event.target).parent().children("a").attr("data-selected", "false")
@@ -258,8 +258,8 @@ function add_player_event_listeners(socket) {
     }
   });
 
-  $(document).on('click', "a.quad-state", function(e) {
-    e.preventDefault();
+  $(document).on('click', "a.quad-state", function(event) {
+    event.preventDefault();
     if (!action_done) {
       var clicked = $(event.target);
       target = clicked.attr('data-target');
@@ -297,7 +297,7 @@ function add_player_event_listeners(socket) {
     }
   });
 
-  $(document).on('click', "a.quad-state > span.badge", function(e) {
+  $(document).on('click', "a.quad-state > span.badge", function(event) {
     $(event.target).parent().children(".specifics").collapse('toggle');
   });
 }
