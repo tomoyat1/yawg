@@ -92,7 +92,6 @@ class WSController
   end
 
   def send_msg_to_socket(socket, msg)
-    puts "why you no wok"
     if @sockets[round.name] && @sockets[round.name].key?(player.name) then
       add_to_next_msg key: :action, value: 'in_round'
       add_to_next_msg key: :info, value: format_info( msg )
