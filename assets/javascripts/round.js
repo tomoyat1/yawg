@@ -124,7 +124,7 @@ function round() {
     socket.onerror = function() {
       if (!error) {
         error = true;
-        alert("エラーが発生しました。トップへ戻ります。");
+        alert("エラーが発生しました。ゲーム画面を再読み込みします。");
       }
       error = false;
       window.location = "/round";
