@@ -265,13 +265,16 @@ class Round
   end
 
   def realtime_handler(player_name:, data:)
-      target = current_phase.realtime_action_handler( player: player( player_name ),
-                                                      data: data )
+    target = current_phase.realtime_action_handler( player: player( player_name ),
+                                                    data: data )
+    if target then
       changed
-      notify_observers players: @players,
-                       round: self,
-                       werewolf_realtime: true,
-                       changed: target
+    end
+
+    notify_observers players: @players,
+                     round: self,
+                     werewolf_realtime: true,
+                     changed: target
   end
 
   def message(msg)

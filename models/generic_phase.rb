@@ -51,7 +51,11 @@ module Phase
     end
 
     def get_player_list(player)
-      player.role.player_list_f
+      unless @action_confirmed.index( player.name ) then
+        player.role.player_list_f
+      else
+        :player_list
+      end
     end
 
     def class_name

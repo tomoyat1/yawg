@@ -79,20 +79,23 @@ class Yawg < Sinatra::Base
   end
 
   get '/round' do
-    round = @@rounds[session[:round]]
-    if !round.in_progress then
-      if round.player( session[:username] ).is_host
-        send_staging :info_new, :controls_staging_new
+    if session[:username]
+      round = @@rounds[session[:round]]
+      if !round.in_progress then
+        if round.player( session[:username] ).is_host
+          send_staging :info_new, :controls_staging_new
+        else
+          send_staging :info_existing, :controls_staging_existing
+        end
+      elsif !round then
+        exit_round
+        session.clear
+        redirect to('/'), 'ゲームは終了しています。'
       else
-        send_staging :info_existing, :controls_staging_existing
+        reconnect
       end
-    elsif !round then
-      exit_round
-      session.clear
-      redirect to('/'), 'ゲームは終了しています。'
     else
-      
-      reconnect
+      redirect to('/')
     end
   end
 
@@ -188,13 +191,13 @@ class Yawg < Sinatra::Base
       round = @@rounds[session[:round]]
       player = round.player session[:username]
       info = format_info "#{session[:round]}に再接続しました。"
-      controls = round.current_phase
+      phase = round.current_phase.shown_name
       player_list = round.current_phase.get_player_list player
       pl_without_self = round.players.reject {|key, value| value == player }
       erb :round_reconnect,
                  :locals => { :location => session[:round],
                               :info => :info_reconnected,
-                              :phase => round.current_phase.shown_name,
+                              :phase => phase,
                               :controls => :controls_round,
                               :action_name => round.action_name_of_player( player ),
                               :player_list => player_list,

@@ -57,6 +57,8 @@ module Phase
                                                      score: data[:score] )
           target
         end
+      else
+        return nil
       end
     end
   end
