@@ -127,7 +127,7 @@ function round() {
         alert("エラーが発生しました。トップへ戻ります。");
       }
       error = false;
-      window.location = "/";
+      window.location = "/round";
     }
     socket.onclose = function() {
       clearInterval(pinger);
