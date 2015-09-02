@@ -34,6 +34,7 @@ class Yawg < Sinatra::Base
     session.delete :r_conflict
     session.delete :no_round
     session.delete :wrong_passcode
+    session.delete :round_gone
     if params[:username] && params[:round] then
       if params[:existing] == 'true' then
         if @@rounds[params[:round]] then
@@ -90,7 +91,8 @@ class Yawg < Sinatra::Base
       elsif !round then
         exit_round
         session.clear
-        redirect to('/'), 'ゲームは終了しています。'
+        session[:round_gone] = true
+        redirect to('/')
       else
         reconnect
       end
@@ -168,7 +170,8 @@ class Yawg < Sinatra::Base
                                  :p_conflict => session[:p_conflict],
                                  :r_conflict => session[:r_conflict],
                                  :no_round => session[:no_round],
-                                 :wrong_passcode => session[:wrong_passcode] }
+                                 :wrong_passcode => session[:wrong_passcode],
+                                 :round_gone => session[:round_gone] }
       end
     end
     

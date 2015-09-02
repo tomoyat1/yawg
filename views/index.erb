@@ -25,6 +25,12 @@
     パスコードが違います。
   </div>
 <% end %>
+<% if round_gone %>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    参加されていたゲームはすでに終了しています。
+  </div>
+<% end %>
 <div class="main">
   <div class="col-sm-6">
     <div class="panel panel-default">
