@@ -82,17 +82,17 @@ class Yawg < Sinatra::Base
   get '/round' do
     if session[:username] then
       round = @@rounds[session[:round]]
-      if !round.in_progress then
+      if !round then
+        exit_round
+        session.clear
+        session[:round_gone] = true
+        redirect to('/')
+      elsif !round.in_progress then
         if round.player( session[:username] ).is_host
           send_staging :info_new, :controls_staging_new
         else
           send_staging :info_existing, :controls_staging_existing
         end
-      elsif !round then
-        exit_round
-        session.clear
-        session[:round_gone] = true
-        redirect to('/')
       else
         reconnect
       end
