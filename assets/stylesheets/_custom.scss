@@ -32,6 +32,13 @@ div.info {
     }
   }
 }
+
+div.specifics {
+  > ul {
+    margin-bottom: 0;
+  }
+}
+
 div.chat {
   > form {
     margin-top: 10px;
