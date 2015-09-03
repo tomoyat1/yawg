@@ -5,12 +5,14 @@ class Player
   attr_reader :is_alive
   attr_reader :is_protected
   attr_accessor :is_host
+  attr_reader :is_spirit_world_sent
 
   def initialize(args)
     @name = args[:name]
     @is_alive = true
     @is_protected = false
     @is_host = false
+    @is_spirit_world_sent = false
   end
 
   def die
@@ -29,6 +31,10 @@ class Player
 
   def unprotect
     @is_protected = false
+  end
+
+  def spirit_world_sent
+    @is_spirit_world_sent = true
   end
 
   def role=(role)

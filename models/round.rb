@@ -183,7 +183,12 @@ class Round
             changed
             notify_observers players: alive, round: self, next_phase: true
 
-            dead = @players.select {|key, value| !value.is_alive }
+            dead = @players.select do |key, value|
+              !value.is_alive && !value.is_spirit_world_sent
+            end
+            dead.each_value do |player|
+              player.spirit_world_sent
+            end
             changed
             notify_observers players: dead, round: self, spirit_world: true
 
