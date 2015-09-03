@@ -261,7 +261,7 @@ function add_player_event_listeners(socket) {
   $(document).on('click', "a.quad-state", function(event) {
     event.preventDefault();
     if (!action_done) {
-      var clicked = $(event.target);
+      var clicked = $(event.target).closest("a.quad-state");
       target = clicked.attr('data-target');
       score = parseInt(clicked.attr('data-score'));
       if (score < 3) {
@@ -297,7 +297,14 @@ function add_player_event_listeners(socket) {
     }
   });
 
-  $(document).on('click', "a.quad-state > span.badge", function(event) {
-    $(event.target).parent().children(".specifics").collapse('toggle');
+  $(document).on('click', "a.details", function(event) {
+    event.preventDefault();
+    var $target = $(event.target);
+    $target.parent().find(".specifics").collapse('toggle');
+    if ($target.hasClass("list-group-item-info")) {
+      $target.removeClass("list-group-item-info");
+    } else {
+      $target.addClass("list-group-item-info");
+    }
   });
 }
