@@ -50,6 +50,7 @@ function round() {
               .scrollTop($("div.info div.panel-body > div").height());
           }
           if (data_in.controls) {
+            action_done = false;
             $("div.controls").fadeOut(50, function() {
               $(this).html(data_in.controls);
               $(this).fadeIn(50);
