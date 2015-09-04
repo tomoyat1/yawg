@@ -46,4 +46,5 @@ $alert-danger-border:         $state-danger-border;
 //Navbar
 $navbar-default-color: $brand-primary;
 $navbar-default-bg: $gray-lighter;
+$navbar-default-link-active-bg: darken($navbar-default-bg, 6.5%);
 $navbar-default-border: $brand-primary;
