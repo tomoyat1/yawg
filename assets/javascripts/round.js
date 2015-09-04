@@ -8,7 +8,7 @@ var reconnect_fails = 0;
 $(function() {
   if (window.location.pathname.match(/staging_/))
     player_list();
-  else if(window.location.pathname.match(/round/))
+  else if(window.location.pathname.match(/game\/round/))
     round();
 });
 
@@ -17,7 +17,7 @@ function round() {
 
   $("div.info div.panel-body")
     .scrollTop($("div.info div.panel-body > div").height());
-  var uri = "ws://" + location.host + "/round/status";
+  var uri = "ws://" + location.host + "/game/round/status";
   var socket = null;
   var pinger = null;
 
@@ -128,7 +128,7 @@ function round() {
         alert("エラーが発生しました。ゲーム画面を再読み込みします。");
       }
       error = false;
-      window.location = "/round";
+      window.location = "/game/round";
     }
     socket.onclose = function() {
       clearInterval(pinger);

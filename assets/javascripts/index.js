@@ -7,7 +7,7 @@ $(function() {
 
 function index() {
   $.ajax({
-    url: "/round/list",
+    url: "/game/round/list",
     success: function(data) {
       $("div.rounds").html(data);
       $("a.round").click(function() {
@@ -42,7 +42,7 @@ function index() {
 
   var round_polling = setInterval(function() {
     $.ajax({
-      url: "/round/list",
+      url: "/game/round/list",
       success: function(data) {
         var selected = ''
         $("a.round").each(function(index, element) {
