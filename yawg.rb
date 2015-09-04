@@ -25,11 +25,11 @@ class Yawg < Sinatra::Base
 
   @@rounds = Hash.new
 
-  get '/' do
+  get '/game' do
     login
   end
 
-  post '/round' do
+  post '/game/round' do
     session.delete :p_conflict
     session.delete :r_conflict
     session.delete :no_round
@@ -41,21 +41,21 @@ class Yawg < Sinatra::Base
           add_result = @@rounds[params[:round]].add_player(params[:username], params[:passcode] )
           if add_result == :success then
             set_session
-            redirect to('/round'), 303
+            redirect to('/game/round'), 303
           elsif add_result == :conflict
             if session[:username] then
-              redirect to('/round'), 303
+              redirect to('/game/round'), 303
             else
               session[:p_conflict] = params[:username]
-              redirect to('/')
+              redirect to('/game')
             end
           elsif add_result == :wrong_passcode then
             session[:wrong_passcode] = true
-            redirect to('/')
+            redirect to('/game')
           end
         else
           session[:no_round] = true
-          redirect to('/')
+          redirect to('/game')
         end
       elsif params[:existing] == 'false' then
         unless @@rounds[params[:round]] then
@@ -64,29 +64,29 @@ class Yawg < Sinatra::Base
           @@rounds[params[:round]].add_player(params[:username], params[:passcode])
           @@rounds[params[:round]].player(params[:username]).is_host = true
           set_session
-          redirect to('/round'), 303
+          redirect to('/game/round'), 303
         else
           if session[:username] then
-            redirect to('/round'), 303
+            redirect to('/game/round'), 303
           else
             session[:r_conflict] = params[:round]
-            redirect to('/')
+            redirect to('/game')
           end
         end
       end
     else
-      redirect to('/'), "フォームが不正です"
+      redirect to('/game'), "フォームが不正です"
     end
   end
 
-  get '/round' do
+  get '/game/round' do
     if session[:username] then
       round = @@rounds[session[:round]]
       if !round then
         exit_round
         session.clear
         session[:round_gone] = true
-        redirect to('/')
+        redirect to('/game')
       elsif !round.in_progress then
         if round.player( session[:username] ).is_host
           send_staging :info_new, :controls_staging_new
@@ -97,16 +97,16 @@ class Yawg < Sinatra::Base
         reconnect
       end
     else
-      redirect to('/')
+      redirect to('/game')
     end
   end
 
-  get '/round/list' do
+  get '/game/round/list' do
     joinable_rounds = @@rounds.reject {|key, value| value.in_progress }
     erb :round_list, :layout => false, :locals => { :rounds => joinable_rounds.keys }
   end
 
-  get '/round/status' do
+  get '/game/round/status' do
     unless request.websocket?
       halt 500
     else
@@ -155,10 +155,10 @@ class Yawg < Sinatra::Base
     end
   end
 
-  get '/round/exit' do
+  get '/game/round/exit' do
     exit_round
     session.clear
-    redirect to('/')
+    redirect to('/game')
   end
 
   helpers do
@@ -210,7 +210,7 @@ class Yawg < Sinatra::Base
         exit_round
         session.clear
         session[:round_gone] = true
-        redirect to('/')
+        redirect to('/game')
       end
     end
 
