@@ -7,16 +7,30 @@
       user-select: none;
 }
 
-div.main {
-  margin-bottom: 50px;
+@mixin line-break {
+  @media only screen and (max-width: 480px) {
+    display: block;
+  }
+}
+
+@mixin shrink-h1 {
+  @media only screen and (max-width: 360px) {
+    font-size: 18pt;
+  }
 }
 
 div.page-header {
   > h1 {
-    @media screen and (max-width: 480px) {
-      font-size: 18pt;
+    @include shrink-h1;
+
+    > small {
+      @include line-break;
     }
   }
+}
+
+div.main {
+  margin-bottom: 50px;
 }
 
 div.info {
