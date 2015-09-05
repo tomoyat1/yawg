@@ -184,7 +184,7 @@ class Round
         end_phase_result.each do |player_name|
           revote_players.store( player_name, player( player_name ) )
         end
-        current_phase.revote revote_players, (4 - @inactivity_strikes)
+        current_phase.revote revote_players
         alive = @players.select {|key, value| value.is_alive }
         changed
         notify_observers players: alive, round: self,
