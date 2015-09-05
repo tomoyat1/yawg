@@ -271,8 +271,6 @@ class Round
 
     if args[:force] then
       RoundCleaner.instance.release self.name
-      changed
-      notify_observers players: @players, round: self, round_kill: true
     end
   end
 

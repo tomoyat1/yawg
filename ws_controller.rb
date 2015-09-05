@@ -86,8 +86,6 @@ class WSController
       send_message players, round, args[:msg]
     elsif args[:round_chat] then
       send_chat_msg players, round, args[:msg]
-    elsif args[:force_kill] then
-      kill_connections_in_round players, round
     end
   end
 
@@ -225,14 +223,6 @@ class WSController
       add_to_next_msg key: :msg, value: msg
       send_msg_to_player_in_round player: player, round: round
     end
-  end
-
-  def kill_connections_in_round(players, round)
-    @sockets[round.name].each do |username, socket|
-      socket.close
-      @sockets[round.name].delete username
-    end
-    @sockets.delete round.name
   end
 
   def format_info(raw_string)
