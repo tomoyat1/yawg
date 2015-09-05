@@ -64,23 +64,10 @@ module Mode
       winners = Hash.new
       losers = Hash.new
       if @survey[:evil] == 0 then
-        winner_msg = '村人側の勝利です'
-        winners = owner.players.reject {|key, value| value.role.is_side_evil }
-        losers = owner.players.reject {|key, value| !value.role.is_side_evil }
+        round_result true
       elsif @survey[:evil] >= @survey[:good] then
-        winner_msg = '人狼側の勝利です'
-        winners = owner.players.reject {|key, value| !value.role.is_side_evil }
-        losers = owner.players.reject {|key, value| value.role.is_side_evil }
+        round_result false
       end
-
-      changed
-      notify_observers players: owner.players,
-                       round: owner,
-                       round_over: true,
-                       winner_msg: winner_msg,
-                       winners: winners,
-                       losers: losers
-      owner.release_round
     end
 
     def reset_survey

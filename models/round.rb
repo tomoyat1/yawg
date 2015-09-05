@@ -158,7 +158,7 @@ class Round
           player.protect
         end
       end
-      set_mode true
+      set_mode one_night
     else
       message "すでにゲームは開始されています。"
     end
