@@ -124,7 +124,8 @@ class Yawg < Sinatra::Base
                 role_rand = msg_hash['role_rand']
                 role_min = msg_hash['role_min']
                 first_kill = msg_hash['first_kill']
-                round.init_round role_rand, role_min, first_kill
+                one_night = msg_hash['one_night']
+                round.init_round role_rand, role_min, first_kill, one_night
               else
                 WSController.instance.send_msg_to_socket ws, "ゲームは削除されました。ゲームから抜けてください。"
               end

@@ -149,6 +149,7 @@ function add_staging_event_listeners(socket) {
       command: "start"
     };
     data_out['first_kill'] = $("a.first-kill").data("bool");
+    data_out['one_night'] = $("a.one-night").data("bool");
     data_out.role_rand = new Object;
     data_out.role_min = new Object;
     var fail = false;
@@ -180,11 +181,11 @@ function add_staging_event_listeners(socket) {
     if($(event.target).data("bool")) {
       $(event.target).data("bool", false);
       $(event.target).removeClass("list-group-item-info");
-      $(event.target).children("span").text("なし");
+      $(event.target).children("span").text("Off");
     } else {
       $(event.target).data("bool", true);
       $(event.target).addClass("list-group-item-info");
-      $(event.target).children("span").text("あり");
+      $(event.target).children("span").text("On");
     }
   });
 }
