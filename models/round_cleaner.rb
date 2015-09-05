@@ -24,6 +24,7 @@ class RoundCleaner
   def release(round_name)
     puts "Released round #{round_name}"
     disable_monitoring round_name
+    Yawg.send_msg_to_round round_name, '<script>window.location = "/game"</script>'
     Yawg.delete_round round_name
   end
 
