@@ -1,16 +1,16 @@
 require 'observer'
 
 require_relative 'generic_role'
-require_relative 'villager'
-require_relative 'werewolf'
+
 require_relative 'generic_phase'
-require_relative 'day'
-require_relative 'night'
+
+require_relative 'generic_mode'
 
 require_relative '../ws_controller'
 
 include Role
 include Phase
+include Mode
 
 class Round
 
@@ -32,7 +32,6 @@ class Round
     @players = Hash.new
     @phases = Array.new
     @roles = Hash.new
-    @round_survey = Hash.new
     @inactivity_strikes = 0
     @chats = Hash.new
     @chats.store 'spirit', RoundChat.new( 'spirit' )
@@ -84,8 +83,7 @@ class Round
   def add_phase(phase)
     phase.owner = self
     @phases << phase
-    @round_survey.store :good, 0
-    @round_survey.store :evil, 0
+    @mode.reset_survey
   end
 
   def add_role(role)
@@ -93,18 +91,20 @@ class Round
     @roles.store(role.class.class_name, role)
   end
 
-  def add_judge(game_mode)
+  def set_mode(one_night)
     unless one_night then
-      @judge = NormalJudge.new
+      @mode = NormalMode.new
     else
-      @judge = OneNightJudge.new
+      @mode = OneNightMode.new
     end
-    @judge.owner = self
+    @mode.owner = self
+    @mode.add_observer WSController.instance
   end
 
-  def init_round(role_rand, role_min, first_kill, game_mode)
+  def init_round(role_rand, role_min, first_kill, one_night=false)
     unless @in_progress then
       @in_progress = true
+      set_mode one_night
       add_phase Night.new(1)
 
       role_array = Array.new
@@ -154,12 +154,12 @@ class Round
       
       changed
       notify_observers players: @players, round: self, round_start: true
+      current_phase.start_phase
       unless first_kill then
         @players.each_value do |player|
           player.protect
         end
       end
-      current_phase.start_phase
     else
       message "すでにゲームは開始されています。"
     end
@@ -173,40 +173,7 @@ class Round
       end_phase_result = current_phase.end_phase
       if end_phase_result == :proceed then
         unless @inactivity_strikes >= 3 then
-          execute_survey
-          if @round_survey[:good] > @round_survey[:evil] && @round_survey[:evil] != 0 then
-            @roles['Werewolf'].reset_state
-            @roles['Knight'].reset_state
-            @roles['Psychic'].reset_state
-            if current_phase.class == Night then
-              add_phase Day.new( current_phase.index )
-            else
-              add_phase Night.new( current_phase.index + 1 )
-            end
-
-            @players.each_value do |player|
-              player.unprotect
-            end
-            current_phase.start_phase
-            alive = @players.select {|key, value| value.is_alive }
-            changed
-            notify_observers players: alive, round: self, next_phase: true
-
-            dead = @players.select do |key, value|
-              !value.is_alive && !value.is_spirit_world_sent
-            end
-            dead.each_value do |player|
-              player.spirit_world_sent
-            end
-            changed
-            notify_observers players: dead, round: self, spirit_world: true
-
-            @round_survey.each_value do |value|
-              value = 0
-            end
-          else
-            end_round
-          end
+          @mode.next_phase
         else
           message "一定時間以上ゲームに進展がなかったので終了します。トップに戻ります。"
           puts "Killing round #{@name} due to inactivity"
@@ -228,42 +195,6 @@ class Round
     end
   end
   
-  def execute_survey
-    players.each_value do |player|
-      if player.is_alive then
-        if player.role.is_count_evil then
-          @round_survey[:evil] += 1
-        else
-          @round_survey[:good] += 1
-        end
-      end
-    end
-  end
-
-  def end_round
-    winner_msg = ''
-    winners = Hash.new
-    losers = Hash.new
-    if @round_survey[:evil] == 0 then
-      winner_msg = '村人側の勝利です'
-      winners = @players.reject {|key, value| value.role.is_side_evil }
-      losers = @players.reject {|key, value| !value.role.is_side_evil }
-    elsif @round_survey[:evil] >= @round_survey[:good] then
-      winner_msg = '人狼側の勝利です'
-      winners = @players.reject {|key, value| !value.role.is_side_evil }
-      losers = @players.reject {|key, value| value.role.is_side_evil }
-    end
-
-    changed
-    notify_observers players: @players,
-                     round: self,
-                     round_over: true,
-                     winner_msg: winner_msg,
-                     winners: winners,
-                     losers: losers
-    release_round
-  end
-
   def action_name_of_player(player)
     current_phase.current_action_name_of_player( player )
   end
