@@ -176,7 +176,7 @@ class Round
         else
           message "一定時間以上ゲームに進展がなかったので終了します。トップに戻ります。"
           puts "Killing round #{@name} due to inactivity"
-          message '<script>window.location = "/"</script>'
+          message '<script>window.location = "/game"</script>'
           release_round force: true
         end
       else
