@@ -15,3 +15,7 @@ require_relative 'psychic'
 require_relative 'generic_phase'
 require_relative 'day'
 require_relative 'night'
+
+require_relative 'generic_judge'
+require_relative 'normal_judge'
+require_relative 'one_night_judge'

@@ -93,7 +93,16 @@ class Round
     @roles.store(role.class.class_name, role)
   end
 
-  def init_round(role_rand, role_min, first_kill)
+  def add_judge(game_mode)
+    unless one_night then
+      @judge = NormalJudge.new
+    else
+      @judge = OneNightJudge.new
+    end
+    @judge.owner = self
+  end
+
+  def init_round(role_rand, role_min, first_kill, game_mode)
     unless @in_progress then
       @in_progress = true
       add_phase Night.new(1)
