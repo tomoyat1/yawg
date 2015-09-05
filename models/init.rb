@@ -15,3 +15,7 @@ require_relative 'psychic'
 require_relative 'generic_phase'
 require_relative 'day'
 require_relative 'night'
+
+require_relative 'generic_mode'
+require_relative 'normal_mode'
+require_relative 'one_night_mode'
