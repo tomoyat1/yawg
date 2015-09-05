@@ -63,10 +63,8 @@ module Phase
     end
 
     #Abstract as "retry phase"
-    def revote(revote_players, trys)
-      owner.inactivity_strike
+    def revote(revote_players)
       owner.message '同じ票数の人がいたので決選投票を行います。'
-      owner.message "#{trys}回以内に処刑する人を決めてください。"
       @action_queue = Array.new
       @action_confirmed = Array.new
       phase_timer
