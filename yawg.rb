@@ -119,32 +119,33 @@ class Yawg < Sinatra::Base
           msg_hash = JSON.parse msg
           if msg_hash.key?('command') then
             round = @@rounds[session[:round]]
-            if msg_hash['command'] == 'start' then
-              if @@rounds[session[:round]] then
+            if round then
+              if msg_hash['command'] == 'start' then
                 role_rand = msg_hash['role_rand']
                 role_min = msg_hash['role_min']
                 first_kill = msg_hash['first_kill']
                 one_night = msg_hash['one_night']
                 round.init_round role_rand, role_min, first_kill, one_night
+              elsif msg_hash['command'] == 'quad_state_score' then
+                extracted_score = { target: msg_hash['target'],
+                                    score: msg_hash['score'] }
+                round.realtime_handler( player_name: session[:username],
+                                        data: extracted_score )
+              elsif msg_hash['command'] == 'confirm_action' then
+                round.add_action_to_phase_queue player_name: session[:username],
+                                                target_names: msg_hash['targets']
+              elsif msg_hash['command'] == 'extend' then
+                round.current_phase.extend_phase 1
+              elsif msg_hash['command'] == 'skip' then
+                round.current_phase.skip_remaining_time
+              elsif msg_hash['command'] == 'chat' then
+                round.handle_chat_msg player_name: session[:username],
+                                      msg: msg_hash['msg'],
+                                      room_name: msg_hash['room_name']
               else
-                WSController.instance.send_msg_to_socket ws, "ゲームは削除されました。ゲームから抜けてください。"
+                session[:no_round] = true
+                redirect to('/game')
               end
-            elsif msg_hash['command'] == 'quad_state_score' then
-              extracted_score = { target: msg_hash['target'],
-                                  score: msg_hash['score'] }
-              round.realtime_handler( player_name: session[:username],
-                                      data: extracted_score )
-            elsif msg_hash['command'] == 'confirm_action' then
-              round.add_action_to_phase_queue player_name: session[:username],
-                                              target_names: msg_hash['targets']
-            elsif msg_hash['command'] == 'extend' then
-              round.current_phase.extend_phase 1
-            elsif msg_hash['command'] == 'skip' then
-              round.current_phase.skip_remaining_time
-            elsif msg_hash['command'] == 'chat' then
-              round.handle_chat_msg player_name: session[:username],
-                                    msg: msg_hash['msg'],
-                                    room_name: msg_hash['room_name']
             end
           end
         end
