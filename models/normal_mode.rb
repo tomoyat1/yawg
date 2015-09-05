@@ -1,14 +1,11 @@
-require 'observer'
-
 require_relative 'generic_mode'
 
 module Mode
   class NormalMode < GenericMode
 
-    include Observable
-  
     def initialize
       @survey = Hash.new
+      reset_survey
     end
 
     def next_phase
@@ -59,7 +56,6 @@ module Mode
       end
       changed
       notify_observers players: dead, round: owner, spirit_world: true
-
       reset_survey
     end
 

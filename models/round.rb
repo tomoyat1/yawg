@@ -83,7 +83,6 @@ class Round
   def add_phase(phase)
     phase.owner = self
     @phases << phase
-    @mode.reset_survey
   end
 
   def add_role(role)
@@ -104,7 +103,6 @@ class Round
   def init_round(role_rand, role_min, first_kill, one_night=false)
     unless @in_progress then
       @in_progress = true
-      set_mode one_night
       add_phase Night.new(1)
 
       role_array = Array.new
@@ -160,6 +158,7 @@ class Round
           player.protect
         end
       end
+      set_mode true
     else
       message "すでにゲームは開始されています。"
     end
