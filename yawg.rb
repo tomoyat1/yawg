@@ -203,7 +203,9 @@ class Yawg < Sinatra::Base
         if player.is_alive then
           phase = round.current_phase.shown_name
           player_list = round.current_phase.get_player_list player
-          pl_without_self = round.players.reject {|key, value| value == player }
+          pl_without_self = round.players.reject do |key, value|
+            value == player || !value.is_alive
+          end
           erb :round_reconnect,
                      :locals => { :location => session[:round],
                                   :info => :info_reconnected,
@@ -214,13 +216,14 @@ class Yawg < Sinatra::Base
                                   :players => pl_without_self }
         else
           phase = '霊界'
+          player_list = :player_list
           erb :round_reconnect,
                      :locals => { :location => session[:round],
                                   :info => :info_reconnected,
                                   :phase => phase,
                                   :controls => :controls_spirit,
                                   :action_name => nil,
-                                  :player_list => :player_list,
+                                  :player_list => player_list,
                                   :players => round.players }
         end
       else
