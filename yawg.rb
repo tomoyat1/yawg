@@ -143,7 +143,7 @@ class Yawg < Sinatra::Base
                 round.current_phase.skip_remaining_time
               elsif msg_hash['command'] == 'chat' then
                 round.handle_chat_msg player_name: session[:username],
-                                      msg: msg_hash['msg'],
+                                      msg: sanitize( msg_hash['msg'] ),
                                       room_name: msg_hash['room_name']
               else
                 session[:no_round] = true
@@ -200,17 +200,29 @@ class Yawg < Sinatra::Base
       unless round.done then
         player = round.player session[:username]
         info = format_info "#{session[:round]}に再接続しました。"
-        phase = round.current_phase.shown_name
-        player_list = round.current_phase.get_player_list player
-        pl_without_self = round.players.reject {|key, value| value == player }
-        erb :round_reconnect,
-                   :locals => { :location => session[:round],
-                                :info => :info_reconnected,
-                                :phase => phase,
-                                :controls => :controls_round,
-                                :action_name => round.action_name_of_player( player ),
-                                :player_list => player_list,
-                                :players => pl_without_self }
+        if player.is_alive then
+          phase = round.current_phase.shown_name
+          player_list = round.current_phase.get_player_list player
+          pl_without_self = round.players.reject {|key, value| value == player }
+          erb :round_reconnect,
+                     :locals => { :location => session[:round],
+                                  :info => :info_reconnected,
+                                  :phase => phase,
+                                  :controls => :controls_round,
+                                  :action_name => round.action_name_of_player( player ),
+                                  :player_list => player_list,
+                                  :players => pl_without_self }
+        else
+          phase = '霊界'
+          erb :round_reconnect,
+                     :locals => { :location => session[:round],
+                                  :info => :info_reconnected,
+                                  :phase => phase,
+                                  :controls => :controls_spirit,
+                                  :action_name => nil,
+                                  :player_list => :player_list,
+                                  :players => round.players }
+        end
       else
         exit_round
         session.clear
