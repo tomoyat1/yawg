@@ -37,7 +37,7 @@ module Phase
 
     def extend_phase(minutes)
       @clock += minutes
-      owner.message "時間を#{minutes}分延長しました"
+      owner.message "時間を#{minutes}分延長しました。"
     end
 
     def skip_remaining_time

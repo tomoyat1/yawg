@@ -25,7 +25,7 @@ module Role
     end
 
     def indirect_confirm_string
-      '殺害対象に関する意見を受け付けました'
+      '殺害対象に関する意見を受け付けました。'
     end
 
     def execute_actions
@@ -53,7 +53,7 @@ module Role
           killed_name = kill_queue.last.name
           owner.message "#{killed_name}は殺されました。"
         else
-          owner.message '誰も殺されませんでした'
+          owner.message '誰も殺されませんでした。'
         end
       else
         owner.message "人狼達は誰を殺すか合意できなかったようです..."
