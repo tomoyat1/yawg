@@ -23,15 +23,6 @@ function round() {
 
   if (socket == null) {
     socket = new WebSocket(uri);
-    socket.onopen = function() {
-      pinger = setInterval(function() {
-        var data_out = {
-          action: 'ping'
-        }
-        socket.send('' + JSON.stringify(data_out));
-      }, 45);
-
-    }
     socket.onmessage = function(event) {
       if (event && event.data) {
         var data_in = $.parseJSON(event.data);
