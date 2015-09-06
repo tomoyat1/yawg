@@ -19,7 +19,6 @@ function round() {
     .scrollTop($("div.info div.panel-body > div").height());
   var uri = "ws://" + location.host + "/game/round/status";
   var socket = null;
-  var pinger = null;
 
   if (socket == null) {
     socket = new WebSocket(uri);
@@ -122,7 +121,6 @@ function round() {
       window.location = "/game/round";
     }
     socket.onclose = function() {
-      clearInterval(pinger);
       reconnect_fails++;
       setTimeout(function() {
         round();
