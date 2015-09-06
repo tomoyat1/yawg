@@ -10,20 +10,15 @@ function index() {
     url: "/game/round/list",
     success: function(data) {
       $("div.rounds").html(data);
-      $("a.round").click(function() {
-        var $clicked = $(this)
+      $(document).on('click', "a.round", function(event) {
+        event.preventDefault();
+        var $clicked = $(event.target);
         $clicked.parent().children("a.round").removeClass("list-group-item-info");
         $clicked.addClass("list-group-item-info");
         $form = $("form[data-existing=true]");
         $form.find("[name=round]").val($clicked.attr('data-round'));
       });
     }
-  });
-  $("a.round").click(function() {
-    $(this).parent().children("a.round").removeClass("list-group-item-info");
-    $(this).addClass("list-group-item-info");
-    $form = $("form[data-existing=true]");
-    $form.find("[name=round]").val($(this).text());
   });
   $("button[type='submit']").click(function(e) {
     e.preventDefault();
@@ -52,14 +47,6 @@ function index() {
         $("div.rounds").html(data);
         if (selected != '')
           $("a.round[data-round=" + selected + "]").addClass("list-group-item-info");
-        $("a.round").click(function(e) {
-          e.preventDefault();
-          var $clicked = $(this);
-          $clicked.parent().children("a.round").removeClass("list-group-item-info");
-          $clicked.addClass("list-group-item-info");
-          $form = $("form[data-existing=true]");
-          $form.find("[name=round]").val($clicked.attr('data-round'));
-        });
       }
     });
   }, 15000);
