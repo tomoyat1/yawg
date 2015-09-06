@@ -1,3 +1,25 @@
+@font-face {
+  font-family: 'genome';
+  src: url('/fonts/Genome-Thin.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'rounded-mplus';
+  src: url('/fonts/rounded-l-mplus-1c-light.woff') format('woff');
+}
+
+body {
+  font-family: 'rounded-mplus'
+}
+
+h1.branding {
+  font-family: 'genome';
+}
+
+div.navbar-brand {
+  font-family: 'genome';
+}
+
 @mixin noselect {
       -webkit-touch-callout: none;
       -webkit-user-select: none;
