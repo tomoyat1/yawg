@@ -35,10 +35,13 @@ class Yawg < Sinatra::Base
     session.delete :no_round
     session.delete :wrong_passcode
     session.delete :round_gone
-    if params[:username] && params[:round] then
+    @username = sanitize params[:username]
+    @roundname = sanitize params[:round]
+    @passcode = sanitize params[:passcode]
+    if @username && @roundname then
       if params[:existing] == 'true' then
-        if @@rounds[params[:round]] then
-          add_result = @@rounds[params[:round]].add_player(params[:username], params[:passcode] )
+        if @@rounds[@roundname] then
+          add_result = @@rounds[@roundname].add_player(@username, @passcode )
           if add_result == :success then
             set_session
             redirect to('/game/round'), 303
@@ -46,7 +49,7 @@ class Yawg < Sinatra::Base
             if session[:username] then
               redirect to('/game/round'), 303
             else
-              session[:p_conflict] = params[:username]
+              session[:p_conflict] = @username
               redirect to('/game')
             end
           elsif add_result == :wrong_passcode then
@@ -58,18 +61,18 @@ class Yawg < Sinatra::Base
           redirect to('/game')
         end
       elsif params[:existing] == 'false' then
-        unless @@rounds[params[:round]] then
-          @@rounds.store( params[:round], Round.new( name: params[:round], passcode: params[:passcode] ) )
-          @@rounds[params[:round]].add_observer WSController.instance
-          @@rounds[params[:round]].add_player(params[:username], params[:passcode])
-          @@rounds[params[:round]].player(params[:username]).is_host = true
+        unless @@rounds[@roundname] then
+          @@rounds.store( @roundname, Round.new( name: @roundname, passcode: @passcode ) )
+          @@rounds[@roundname].add_observer WSController.instance
+          @@rounds[@roundname].add_player(@username, @passcode)
+          @@rounds[@roundname].player(@username).is_host = true
           set_session
           redirect to('/game/round'), 303
         else
           if session[:username] then
             redirect to('/game/round'), 303
           else
-            session[:r_conflict] = params[:round]
+            session[:r_conflict] = @roundname
             redirect to('/game')
           end
         end
@@ -178,8 +181,8 @@ class Yawg < Sinatra::Base
     end
     
     def set_session
-      session[:username] = params[:username]
-      session[:round] = params[:round]
+      session[:username] = @username
+      session[:round] = @roundname
     end
 
     def send_staging(info, controls)
@@ -225,6 +228,10 @@ class Yawg < Sinatra::Base
           RoundCleaner.instance.release session[:round]
         end
       end
+    end
+
+    def sanitize(text)
+      Rack::Utils.escape_html text
     end
 
     def format_info(raw_string)
