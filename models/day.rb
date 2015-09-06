@@ -16,7 +16,7 @@ module Phase
       result = Hash.new
       result_str = ''
       if @action_confirmed.index( player.name ) == nil then
-        unless targets[0] == nil then
+        if targets[0] != nil && targets[0].is_alive then
           @action_queue << targets.first
           result_str = '投票を受け付けました。'
         else

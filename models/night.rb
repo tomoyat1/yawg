@@ -15,7 +15,13 @@ module Phase
       result = Hash.new
       result_str = ''
       if @action_confirmed.index( player.name ) == nil then
-        if targets[0] == nil && !player.role.night_action_auto then
+        targets_valid = true
+        targets.each do |target|
+          if !target.is_alive then
+            targets_valid = false
+          end
+        end
+        if targets[0] == nil && !player.role.night_action_auto && targets_valid then
           result_str = '能力を発動する相手を選んでください。'
         else
           unless player.role.night_action_direct? then

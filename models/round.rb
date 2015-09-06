@@ -199,15 +199,17 @@ class Round
   end
 
   def add_action_to_phase_queue(player_name:, target_names:)
-    result = Hash.new
-    targets = Array.new
-    target_names.each do |target_name|
-      targets << player( target_name )
+    if player( player_name ).is_alive then
+      result = Hash.new
+      targets = Array.new
+      target_names.each do |target_name|
+        targets << player( target_name )
+      end
+      result = current_phase.add_action player: player( player_name ),
+                                        targets: targets 
+      changed
+      notify_observers players: @players, round: self, add_action: true, result: result
     end
-    result = current_phase.add_action player: player( player_name ),
-                                      targets: targets 
-    changed
-    notify_observers players: @players, round: self, add_action: true, result: result
   end
 
   def realtime_handler(player_name:, data:)
