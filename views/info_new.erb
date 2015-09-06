@@ -6,9 +6,6 @@
     <div>
       <div>新しいゲーム<%= session[:round] %>を作成しました。</div>
       <div>あなたのユーザー名は<%= session[:username] %>です。</div>
-      <% if params.key?( :passcode ) %>
-        <div>パスコードは<%= params[:passcode] %>です。</div>
-      <% end %>
     </div>
   </div>
 </div>
