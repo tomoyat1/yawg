@@ -19,11 +19,11 @@ module Phase
         if targets[0] != nil && targets[0].is_alive then
           @action_queue << targets.first
           result_str = '投票を受け付けました。'
+          @action_confirmed << player.name
         else
           result_str = '投票する人を選んでください。'
         end
       end
-      @action_confirmed << player.name
       result.store :player, player
       result.store :msg, result_str
       result
