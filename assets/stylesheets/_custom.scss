@@ -20,6 +20,10 @@ div.navbar-brand {
   font-family: 'genome';
 }
 
+div.navbar-brand > small {
+  color: #707070;
+}
+
 @mixin noselect {
       -webkit-touch-callout: none;
       -webkit-user-select: none;
@@ -38,6 +42,13 @@ div.navbar-brand {
 @mixin shrink-h1 {
   @media only screen and (max-width: 360px) {
     font-size: 18pt;
+  }
+}
+
+@media only screen and (max-width: 335px) {
+  .navbar-brand {
+    font-size: 16px;
+    line-height: 24px;
   }
 }
 
