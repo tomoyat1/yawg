@@ -4,12 +4,17 @@
 }
 
 @font-face {
-  font-family: 'rounded-mplus';
+  font-family: 'rounded-mplus-light';
   src: url('/fonts/rounded-l-mplus-1c-light.woff') format('woff');
 }
 
+@font-face {
+  font-family: 'rounded-mplus-thin';
+  src: url('/fonts/rounded-l-mplus-1c-thin.woff') format('woff');
+}
+
 body {
-  font-family: 'rounded-mplus'
+  font-family: 'rounded-mplus-light'
 }
 
 h1.branding {
@@ -64,6 +69,10 @@ div.page-header {
 
 div.main {
   margin-bottom: 50px;
+}
+
+h1.phase {
+  font-family: 'rounded-mplus-thin'
 }
 
 div.info {
