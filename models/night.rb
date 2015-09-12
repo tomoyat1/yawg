@@ -17,7 +17,7 @@ module Phase
       if @action_confirmed.index( player.name ) == nil then
         targets_valid = true
         targets.each do |target|
-          if !target.is_alive then
+          if target and !target.is_alive then
             targets_valid = false
           end
         end
