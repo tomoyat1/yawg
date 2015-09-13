@@ -85,7 +85,7 @@ class WSController
     elsif args[:timer_message] then
       send_message players, round, args[:msg]
     elsif args[:round_chat] then
-      send_chat_msg players, round, args[:msg]
+      send_chat_msg players, round, args[:speaker], args[:msg]
     end
   end
 
@@ -217,9 +217,10 @@ class WSController
     end
   end
 
-  def send_chat_msg(players, round, msg)
+  def send_chat_msg(players, round, speaker, msg)
     players.each_value do |player|
       add_to_next_msg key: :action, value: 'chat'
+      add_to_next_msg key: :speaker, value: speaker
       add_to_next_msg key: :msg, value: msg
       send_msg_to_player_in_round player: player, round: round
     end

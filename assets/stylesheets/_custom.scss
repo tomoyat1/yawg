@@ -110,6 +110,18 @@ div.chat {
     > div {
       margin-top: 0;
     }
+
+    div.msg-frame {
+      clear: left;
+
+      > div.speaker {
+        float: left;
+      }
+
+      > div.msg {
+        float: left;
+      }
+    }
   }
 }
 
