@@ -241,6 +241,7 @@ class Round
       notify_observers players: chat_hash[:players],
                        round: self,
                        round_chat: true,
+                       speaker: chat_hash[:speaker].name,
                        msg: chat_hash[:msg]
     end
 =begin

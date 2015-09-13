@@ -92,7 +92,10 @@ function round() {
           }
         } else if (data_in.action == 'chat') {
           if (data_in.msg) {
-            $("div.chat-display > div").append(data_in.msg);
+            $msg_frame = $('<div class="msg-frame"></div>');
+            $msg_frame.append('<div class="speaker">' + data_in.speaker +' &gt;</div>');
+            $msg_frame.append('<div class="msg"> ' + data_in.msg + '</div>')
+            $("div.chat-display > div").append($msg_frame);
             $("div.chat-display")
               .scrollTop($("div.chat-display > div").height());
           }
