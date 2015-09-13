@@ -124,7 +124,7 @@ function round() {
       reconnect_fails++;
       setTimeout(function() {
         round();
-      }, (2 ^ reconnect_fails) * 1000);
+      }, (2 ^ reconnect_fails) * 100);
     }
   }
   add_staging_event_listeners(socket);
