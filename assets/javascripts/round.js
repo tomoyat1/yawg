@@ -146,7 +146,8 @@ function add_staging_event_listeners(socket) {
       $role_input = $(this).parents().eq(2);
       $cor_min = $role_input.find("input.role-min");
       if (parseInt($(this).val(), 10) < parseInt($cor_min.val(), 10)) {
-        $role_input.children().addClass("has-error");
+        $role_input.children().addClass("has-warning");
+        $(this).val($cor_min.val());
         fail = true;
         return true;
       } else {
@@ -160,7 +161,7 @@ function add_staging_event_listeners(socket) {
     if (!fail) {
       socket.send("" + JSON.stringify(data_out));
     } else {
-      $("div.info div.panel-body > div").append("<div>最大が最小の数以上にになるように役職の数を指定してください。</div>");
+      $("div.info div.panel-body > div").append("<div>最大が最小の数以上にになるように役職の数調整しました。ご確認ください。</div>");
       $("div.info div.panel-body")
         .scrollTop($("div.info div.panel-body > div").height());
     }
