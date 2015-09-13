@@ -161,7 +161,7 @@ function add_staging_event_listeners(socket) {
     if (!fail) {
       socket.send("" + JSON.stringify(data_out));
     } else {
-      $("div.info div.panel-body > div").append("<div>最大が最小の数以上にになるように役職の数調整しました。ご確認ください。</div>");
+      $("div.info div.panel-body > div").append("<div>最大が最小の数以上でなかったため、役職の数調整しました。ご確認ください。</div>");
       $("div.info div.panel-body")
         .scrollTop($("div.info div.panel-body > div").height());
     }
