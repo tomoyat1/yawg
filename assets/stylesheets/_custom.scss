@@ -157,6 +157,10 @@ a.single-select {
   }
 }
 
-input, .chat-display div, .player-list li {
-  font-family: sans-serif;
+input, .sans-serif {
+  font-family: "ヒラギノ丸ゴ Pro","Hiragino Maru Gothic Pro","メイリオ","Meiryo",sans-serif;
+
+  span {
+    font-family: 'rounded-mplus-light';
+  }
 }
