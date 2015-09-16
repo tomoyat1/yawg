@@ -171,7 +171,7 @@ class Yawg < Sinatra::Base
       if session[:username] then
         erb :reconnect, :locals => { :location => 'Reconnect', :round => session[:round] }
       else
-        erb :index, :locals => { :location => 'Game',
+        erb :index, :locals => { :location => 'ロビー',
                                  :p_conflict => session[:p_conflict],
                                  :r_conflict => session[:r_conflict],
                                  :no_round => session[:no_round],
