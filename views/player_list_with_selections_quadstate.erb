@@ -5,7 +5,7 @@
   <div class="list-group">
     <a href="#" class="list-group-item details">詳細を表示する</a>
     <% players.each_key do |key| %>
-      <a href="#" class="list-group-item quad-state sans-serif" data-target="<%= key %>" data-score="0">
+      <a href="#" class="list-group-item quad-state" data-target="<%= key %>" data-score="0">
       <%= key %><span class="badge" data-toggle="collapse" data-target="<%= key %>">0</span>
         <div class="specifics collapse" id="<%= key %>">
           <ul>

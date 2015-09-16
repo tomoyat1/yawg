@@ -4,7 +4,7 @@
   </div>
   <ul class="list-group">
     <% winners.each do |key, value| %>
-      <li class="list-group-item sans-serif"><%= key %> <span class="pull-right">役職: <%= value.role.name %></span></li>
+      <li class="list-group-item"><%= key %> <span class="pull-right">役職: <%= value.role.name %></span></li>
     <% end %>
   </ul>
   <div class="panel-heading">
@@ -12,7 +12,7 @@
   </div>
   <ul class="list-group">
     <% losers.each do |key, value| %>
-      <li class="list-group-item sans-serif"><%= key %> <span class="pull-right">役職: <%= value.role.name %></span></li>
+      <li class="list-group-item"><%= key %> <span class="pull-right">役職: <%= value.role.name %></span></li>
     <% end %>
   </ul>
 </div>
