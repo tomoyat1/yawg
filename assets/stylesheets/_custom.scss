@@ -21,11 +21,11 @@ h1.branding {
   font-family: 'genome';
 }
 
-div.navbar-brand {
+div.navbar-brand, a.navbar-brand{
   font-family: 'genome';
 }
 
-div.navbar-brand > small {
+div.navbar-brand, a.navbar-brand > small {
   color: #707070;
 }
 
