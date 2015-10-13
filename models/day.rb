@@ -7,7 +7,7 @@ module Phase
       super
       @shown_name = "昼"
       @clock = 5
-      @start_msg = "朝が来ました。処刑する人を相談して決めて、各自投票をしてください。"
+      @start_msg = "朝が来ました。処刑する人を相談して決めて、各自投票をしてください。全員が投票をすると処刑が行われます。"
       @timeup_msg = "相談と投票の時間は終了しました。"
 
     end
@@ -76,6 +76,16 @@ module Phase
 
     def current_action_name_of_player(player)
       player.role.day_action_name
+    end
+
+    def did_everyone_confirm?
+      did_everyone_confirm = true
+      owner.players.each_key do |player_name|
+        unless @action_confirmed.index( player_name ) then
+          did_everyone_confirm = false
+        end
+      end
+      return did_everyone_confirm
     end
 
   end
