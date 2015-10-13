@@ -7,7 +7,7 @@ module Phase
       super
       @shown_name = "夜"
       @clock = 3
-      @start_msg = "夜が来ました。能力を発動する相手を選んでください。"
+      @start_msg = "夜が来ました。能力を発動する相手を選んでください。全員が行動を確定した時点で自動的に昼になります。"
       @timeup_msg = "選択時間は終了しました。"
     end
 
@@ -53,6 +53,16 @@ module Phase
 
     def current_action_name_of_player(player)
       player.role.night_action_name
+    end
+
+    def did_everyone_confirm?
+      did_everyone_confirm = true
+      owner.players.each_key do |player_name|
+        unless @action_confirmed.index( player_name ) then
+          did_everyone_confirm = false
+        end
+      end
+      return did_everyone_confirm
     end
 
     def realtime_action_handler(player:, data:)
