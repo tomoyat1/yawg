@@ -209,6 +209,10 @@ class Round
                                         targets: targets 
       changed
       notify_observers players: @players, round: self, add_action: true, result: result
+
+      if current_phase.did_everyone_confirm? then
+        current_phase.skip_remaining_time
+      end
     end
   end
 
