@@ -3,6 +3,7 @@ Bundler.require
 
 require 'sinatra/reloader'
 require 'json'
+require 'date'
 require_relative 'models/init'
 
 require_relative 'ws_controller'
@@ -116,7 +117,7 @@ class Yawg < Sinatra::Base
       request.websocket do |ws|
         ws.onopen do
           WSController.instance.add_socket( ws, session[:username], session[:round] )
-          puts "#{session[:username]} connected"
+          puts "#{DateTime.now.strftime('%F %H:%m:%S')} #{session[:username]} connected"
         end
         ws.onmessage do |msg|
           msg_hash = JSON.parse msg
@@ -153,7 +154,7 @@ class Yawg < Sinatra::Base
           end
         end
         ws.onclose do
-          puts "#{session[:username]}'s connection was terminated."
+          puts "#{DateTime.now.strftime('%F %H:%m:%S')} #{session[:username]}'s connection was terminated."
           WSController.instance.delete_socket(session[:username], session[:round])
         end
       end
